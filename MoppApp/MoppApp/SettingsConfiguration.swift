@@ -331,6 +331,7 @@ class SettingsConfiguration: NSObject, URLSessionDelegate, URLSessionTaskDelegat
     private func setupMoppLDAPConfiguration(configuration: MOPPConfiguration) {
         MoppLdapConfiguration.ldapPersonURLS = configuration.LDAPPERSONURLS ?? [configuration.LDAPPERSONURL]
         MoppLdapConfiguration.ldapCorpURL = configuration.LDAPCORPURL
+        CDoc2Settings.cdoc2Certs = configuration.CERTBUNDLE
 
         guard !configuration.LDAPCERTS.isEmpty else { printLog("No LDAP certs found (central configuration)"); return }
         guard let ldapCertsPath = MoppLdapConfiguration.ldapCertsPath else { printLog("No LDAP certs path found"); return }

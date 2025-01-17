@@ -877,7 +877,7 @@ extension ContainerViewController : ContainerHeaderDelegate {
                 return
             }
 
-            let isContainerCdoc: Bool = containerExtension == ContainerFormatCdoc
+            let isContainerCdoc: Bool = containerExtension.isCryptoContainerExtension
 
             guard let newContainerPath: URL = self.getNewContainerUrlPath(isContainerCdoc: isContainerCdoc, asicContainer: asicContainer, cdocContainer: cdocContainer, newContainerName: textFieldText, containerExtension: containerExtension), newContainerPath.isFileURL else {
                 printLog("Failed to get container path")

@@ -29,12 +29,15 @@
 		4E0F09ED2D76F6C0003F24B9 /* MoppLib.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DF15038F2AC5CFFA007222B2 /* MoppLib.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4E0F09EE2D76F6C4003F24B9 /* SkSigningLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DF1503A02AC5D01A007222B2 /* SkSigningLib.framework */; };
 		4E0F09EF2D76F6C4003F24B9 /* SkSigningLib.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DF1503A02AC5D01A007222B2 /* SkSigningLib.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		4E0F0A1C2D76F87D003F24B9 /* SettingsEncryptingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E0F0A192D76F87D003F24B9 /* SettingsEncryptingView.swift */; };
+		4E0F0A1D2D76F87D003F24B9 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E0F0A1A2D76F87D003F24B9 /* ViewController.swift */; };
 		4E167D882B6D346F001B74A1 /* digidocpp.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4E167D862B6D346F001B74A1 /* digidocpp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4E59080024B0F914001B23A6 /* SmartIDEditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E5907FF24B0F914001B23A6 /* SmartIDEditViewController.swift */; };
 		4E59080224B258C7001B23A6 /* SmartIDChallengeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E59080124B258C6001B23A6 /* SmartIDChallengeViewController.swift */; };
 		4E59080424B2E295001B23A6 /* SmartIDSignature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E59080324B2E295001B23A6 /* SmartIDSignature.swift */; };
 		4E6E1D9B2AAB493A008B3E74 /* NFCEditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E6E1D9A2AAB493A008B3E74 /* NFCEditViewController.swift */; };
 		4E7C98CC2E5EF0B100D51D9E /* RoleDetailsViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFF6A55627E14D3B0055F8D5 /* RoleDetailsViewControllerTests.swift */; };
+		4EE43A752D515048002773BB /* libMoppUI.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EE43A652D514E3C002773BB /* libMoppUI.a */; };
 		4EE56D232AB0561C002648EE /* NFCSignature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE56D222AB0561C002648EE /* NFCSignature.swift */; };
 		540786E91E1A76640016ABA7 /* UITextView+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 540786E81E1A76640016ABA7 /* UITextView+Additions.swift */; };
 		547BDF251E8BEFA30093931F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E4250D0D1E0AA8E500530370 /* Localizable.strings */; };
@@ -269,6 +272,13 @@
 			remoteGlobalIDString = E4250CC21E0968D200530370;
 			remoteInfo = MoppApp;
 		};
+		4EE43A762D515048002773BB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E4250CBB1E0968D200530370 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4EE43A642D514E3C002773BB;
+			remoteInfo = MoppUI;
+		};
 		54A4182D1E83FAD200559E2B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E4250CBB1E0968D200530370 /* Project object */;
@@ -344,12 +354,15 @@
 		39CDA7E920ADBCEB006E2E9F /* Crypto.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Crypto.storyboard; sourceTree = "<group>"; };
 		39CDA7ED20ADBE93006E2E9F /* CryptoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoViewController.swift; sourceTree = "<group>"; };
 		39F8EFE620D263B5001BCF73 /* TokenFlow.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = TokenFlow.storyboard; sourceTree = "<group>"; };
+		4E0F0A192D76F87D003F24B9 /* SettingsEncryptingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsEncryptingView.swift; sourceTree = "<group>"; };
+		4E0F0A1A2D76F87D003F24B9 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		4E167D862B6D346F001B74A1 /* digidocpp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = digidocpp.framework; path = "${DIGIDOCPP_PATH}/lib/digidocpp.framework"; sourceTree = "<absolute>"; };
 		4E5907FF24B0F914001B23A6 /* SmartIDEditViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmartIDEditViewController.swift; sourceTree = "<group>"; };
 		4E59080124B258C6001B23A6 /* SmartIDChallengeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmartIDChallengeViewController.swift; sourceTree = "<group>"; };
 		4E59080324B2E295001B23A6 /* SmartIDSignature.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmartIDSignature.swift; sourceTree = "<group>"; };
 		4E6E1D9A2AAB493A008B3E74 /* NFCEditViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NFCEditViewController.swift; sourceTree = "<group>"; };
 		4E7C98C12E5EF08500D51D9E /* MoppAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MoppAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		4EE43A652D514E3C002773BB /* libMoppUI.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libMoppUI.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		4EE56D222AB0561C002648EE /* NFCSignature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFCSignature.swift; sourceTree = "<group>"; };
 		540786E81E1A76640016ABA7 /* UITextView+Additions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextView+Additions.swift"; sourceTree = "<group>"; };
 		54825EF41E1CFE9600253FF0 /* Date+Additions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Date+Additions.swift"; sourceTree = "<group>"; };
@@ -598,6 +611,7 @@
 				4E0F09EA2D76F6BD003F24B9 /* CryptoLib.framework in Frameworks */,
 				4E0F09EE2D76F6C4003F24B9 /* SkSigningLib.framework in Frameworks */,
 				DF1503AB2AC5D1E5007222B2 /* ZIPFoundation in Frameworks */,
+				4EE43A752D515048002773BB /* libMoppUI.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -639,6 +653,15 @@
 				DFBDF1F327D8DD4100A5CF3C /* RoleAndAddressViewController.swift */,
 			);
 			name = "Token flow";
+			sourceTree = "<group>";
+		};
+		4E0F0A1B2D76F87D003F24B9 /* MoppUI */ = {
+			isa = PBXGroup;
+			children = (
+				4E0F0A192D76F87D003F24B9 /* SettingsEncryptingView.swift */,
+				4E0F0A1A2D76F87D003F24B9 /* ViewController.swift */,
+			);
+			path = MoppUI;
 			sourceTree = "<group>";
 		};
 		540786E61E1A76280016ABA7 /* Extensions */ = {
@@ -1050,6 +1073,7 @@
 				E4250CC51E0968D200530370 /* MoppApp */,
 				54A418251E83FAD200559E2B /* shareExtension */,
 				DFF6A54E27E14C180055F8D5 /* MoppAppTests */,
+				4E0F0A1B2D76F87D003F24B9 /* MoppUI */,
 				E4250CC41E0968D200530370 /* Products */,
 				F9074FEF4DC2DB83A60B75B9 /* Frameworks */,
 			);
@@ -1061,6 +1085,7 @@
 				E4250CC31E0968D200530370 /* MoppApp.app */,
 				54A418241E83FAD200559E2B /* shareExtension.appex */,
 				4E7C98C12E5EF08500D51D9E /* MoppAppTests.xctest */,
+				4EE43A652D514E3C002773BB /* libMoppUI.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1215,6 +1240,23 @@
 			productReference = 4E7C98C12E5EF08500D51D9E /* MoppAppTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		4EE43A642D514E3C002773BB /* MoppUI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4EE43A712D514E3C002773BB /* Build configuration list for PBXNativeTarget "MoppUI" */;
+			buildPhases = (
+				4EE43A612D514E3C002773BB /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MoppUI;
+			packageProductDependencies = (
+			);
+			productName = MoppUI;
+			productReference = 4EE43A652D514E3C002773BB /* libMoppUI.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		54A418231E83FAD200559E2B /* shareExtension */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 54A418321E83FAD200559E2B /* Build configuration list for PBXNativeTarget "shareExtension" */;
@@ -1248,6 +1290,7 @@
 			);
 			dependencies = (
 				54A4182E1E83FAD200559E2B /* PBXTargetDependency */,
+				4EE43A772D515048002773BB /* PBXTargetDependency */,
 			);
 			name = MoppApp;
 			packageProductDependencies = (
@@ -1272,6 +1315,9 @@
 					4E7C98C02E5EF08500D51D9E = {
 						CreatedOnToolsVersion = 16.4;
 						TestTargetID = E4250CC21E0968D200530370;
+					};
+					4EE43A642D514E3C002773BB = {
+						CreatedOnToolsVersion = 16.2;
 					};
 					54A418231E83FAD200559E2B = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -1329,6 +1375,7 @@
 				E4250CC21E0968D200530370 /* MoppApp */,
 				54A418231E83FAD200559E2B /* shareExtension */,
 				4E7C98C02E5EF08500D51D9E /* MoppAppTests */,
+				4EE43A642D514E3C002773BB /* MoppUI */,
 			);
 		};
 /* End PBXProject section */
@@ -1500,6 +1547,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				4E7C98CC2E5EF0B100D51D9E /* RoleDetailsViewControllerTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4EE43A612D514E3C002773BB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4E0F0A1C2D76F87D003F24B9 /* SettingsEncryptingView.swift in Sources */,
+				4E0F0A1D2D76F87D003F24B9 /* ViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1712,6 +1768,11 @@
 			target = E4250CC21E0968D200530370 /* MoppApp */;
 			targetProxy = 4E7C98C52E5EF08500D51D9E /* PBXContainerItemProxy */;
 		};
+		4EE43A772D515048002773BB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4EE43A642D514E3C002773BB /* MoppUI */;
+			targetProxy = 4EE43A762D515048002773BB /* PBXContainerItemProxy */;
+		};
 		54A4182E1E83FAD200559E2B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 54A418231E83FAD200559E2B /* shareExtension */;
@@ -1769,6 +1830,46 @@
 				PRODUCT_BUNDLE_IDENTIFIER = ee.ria.MoppAppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MoppApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MoppApp";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		4EE43A692D514E3C002773BB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		4EE43A6A2D514E3C002773BB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -2009,6 +2110,15 @@
 			buildConfigurations = (
 				4E7C98C82E5EF08500D51D9E /* Debug */,
 				4E7C98C92E5EF08500D51D9E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4EE43A712D514E3C002773BB /* Build configuration list for PBXNativeTarget "MoppUI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4EE43A692D514E3C002773BB /* Debug */,
+				4EE43A6A2D514E3C002773BB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

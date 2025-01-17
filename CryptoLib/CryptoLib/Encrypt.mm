@@ -42,7 +42,14 @@ struct Settings: public libcdoc::Configuration {
 
 struct Network: public libcdoc::NetworkBackend {
     libcdoc::result_t getPeerTLSCertificates(std::vector<std::vector<uint8_t>> &dst, const std::string& url) final {
-        return libcdoc::NetworkBackend::getPeerTLSCertificates(dst);
+        libcdoc::NetworkBackend::getPeerTLSCertificates(dst);
+        for (NSData *cert in CDoc2Settings.cdoc2Certs) {
+            dst.push_back([cert toVector]);
+        }
+        if (auto cert = [CDoc2Settings.getCert toVector]; !cert.empty()) {
+            dst.push_back(std::move(cert));
+        }
+        return libcdoc::OK;
     }
 };
 

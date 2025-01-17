@@ -29,74 +29,78 @@ public class CDoc2Settings: NSObject {
     public static let kUseCDoc2UUID = "kUseCDoc2UUID"
     public static let kUseCDoc2PostURL = "kUseCDoc2PostURL"
     public static let kUseCDoc2FetchURL = "kUseCDoc2FetchURL"
+    public static let kUseCDoc2Cert = "kUseCDoc2Cert"
 
-    private static func set(_ key: String, value: Bool) {
+    private static func set<T>(_ key: String, value: T) {
         UserDefaults.standard.set(value, forKey: key)
     }
 
-    private static func get(_ key: String) -> Bool {
-        return UserDefaults.standard.bool(forKey: key)
-    }
-
-    private static func setString(_ key: String, value: String?) {
-        UserDefaults.standard.set(value, forKey: key)
-    }
-
-    private static func getString(_ key: String) -> String? {
-        return UserDefaults.standard.string(forKey: key)
+    private static func get<T>(_ key: String) -> T? {
+        return UserDefaults.standard.object(forKey: key) as? T
     }
 
     public class var useEncryption: Bool {
-        get { get(kUseCDoc2Encryption) }
+        get { get(kUseCDoc2Encryption) ?? false }
         set { set(kUseCDoc2Encryption, value: newValue) }
     }
 
     public class var useOnlineEncryption: Bool {
-        get { get(kUseCDoc2OnlineEncryption) }
+        get { get(kUseCDoc2OnlineEncryption) ?? true }
         set { set(kUseCDoc2OnlineEncryption, value: newValue) }
     }
 
     public class var cdoc2SelectedService: String? {
-        get { getString(kUseCDoc2SelectedService) }
-        set { setString(kUseCDoc2SelectedService, value: newValue) }
+        get { get(kUseCDoc2SelectedService) }
+        set { set(kUseCDoc2SelectedService, value: newValue) }
     }
 
     public class var cdoc2UUID: String? {
-        get { getString(kUseCDoc2UUID) }
-        set { setString(kUseCDoc2UUID, value: newValue) }
+        get { get(kUseCDoc2UUID) }
+        set { set(kUseCDoc2UUID, value: newValue) }
     }
 
     public class var cdoc2PostURL: String? {
-        get { getString(kUseCDoc2PostURL) }
-        set { setString(kUseCDoc2PostURL, value: newValue) }
+        get { get(kUseCDoc2PostURL) }
+        set { set(kUseCDoc2PostURL, value: newValue) }
     }
 
     public class var cdoc2FetchURL: String? {
-        get { getString(kUseCDoc2FetchURL) }
-        set { setString(kUseCDoc2FetchURL, value: newValue) }
+        get { get(kUseCDoc2FetchURL) }
+        set { set(kUseCDoc2FetchURL, value: newValue) }
     }
 
+    public class var cdoc2Cert: Data? {
+        get { get(kUseCDoc2Cert) }
+        set { set(kUseCDoc2Cert, value: newValue) }
+    }
+
+    @objc public static var cdoc2Certs = [Data]()
+
     @objc public class func isEncryptionEnabled() -> Bool {
-        return get(kUseCDoc2Encryption)
+        return useEncryption
     }
 
     @objc public class func isOnlineEncryptionEnabled() -> Bool {
-        return get(kUseCDoc2OnlineEncryption)
+        return useOnlineEncryption
     }
 
     @objc public class func getSelectedService() -> String? {
-        return getString(kUseCDoc2SelectedService)
+        return cdoc2SelectedService
     }
 
     @objc public class func getUUID() -> String? {
-        return getString(kUseCDoc2UUID)
+        return cdoc2UUID
     }
 
     @objc public class func getPostURL() -> String? {
-        return getString(kUseCDoc2PostURL)
+        return cdoc2PostURL
     }
 
     @objc public class func getFetchURL() -> String? {
-        return getString(kUseCDoc2FetchURL)
+        return cdoc2FetchURL
+    }
+
+    @objc public class func getCert() -> Data? {
+        return cdoc2Cert
     }
 }

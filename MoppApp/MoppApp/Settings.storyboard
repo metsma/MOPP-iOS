@@ -189,8 +189,96 @@
                                             <outlet property="signingCategoryButton" destination="xGF-a1-U9U" id="5Ox-Af-6nt"/>
                                         </connections>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="EncryptingCategoryCell" rowHeight="124.99999988079071" id="z5c-4K-Qr2" customClass="EncryptingCategoryCell" customModule="MoppApp" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="315" width="375" height="125"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="z5c-4K-Qr2" id="8sb-X1-dTm">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="125"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="K2E-er-UiS">
+                                                    <rect key="frame" x="0.0" y="36" width="375" height="53"/>
+                                                    <subviews>
+                                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EyA-Yy-jh4">
+                                                            <rect key="frame" x="24" y="0.0" width="20" height="53"/>
+                                                            <subviews>
+                                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="settingsSigningIcon" translatesAutoresizingMaskIntoConstraints="NO" id="J0y-GV-h5x">
+                                                                    <rect key="frame" x="0.0" y="0.0" width="20" height="53"/>
+                                                                    <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                    <constraints>
+                                                                        <constraint firstAttribute="width" constant="20" id="Ujl-f2-pzx"/>
+                                                                        <constraint firstAttribute="height" constant="20" id="l3j-Ve-WjP"/>
+                                                                    </constraints>
+                                                                </imageView>
+                                                            </subviews>
+                                                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="bottom" secondItem="J0y-GV-h5x" secondAttribute="bottom" id="Dhz-EU-ZJw"/>
+                                                                <constraint firstAttribute="trailing" secondItem="J0y-GV-h5x" secondAttribute="trailing" id="gAX-HP-xKj"/>
+                                                                <constraint firstItem="J0y-GV-h5x" firstAttribute="top" secondItem="EyA-Yy-jh4" secondAttribute="top" id="k7Z-ie-dxS"/>
+                                                                <constraint firstItem="J0y-GV-h5x" firstAttribute="leading" secondItem="EyA-Yy-jh4" secondAttribute="leading" id="oa9-jW-vLv"/>
+                                                            </constraints>
+                                                        </view>
+                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zKu-od-9xN" customClass="ScaledButton" customModule="MoppApp" customModuleProvider="target">
+                                                            <rect key="frame" x="68" y="0.0" width="231" height="53"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                            <state key="normal" title="Encrypting">
+                                                                <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                            </state>
+                                                            <connections>
+                                                                <action selector="openEncryptingCategory:" destination="Sh7-45-xtX" eventType="touchUpInside" id="K9E-Ks-YMe"/>
+                                                            </connections>
+                                                        </button>
+                                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ftZ-uB-KXx">
+                                                            <rect key="frame" x="323" y="0.0" width="20" height="53"/>
+                                                            <subviews>
+                                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="disclosureIndicator" translatesAutoresizingMaskIntoConstraints="NO" id="sgt-hq-83h">
+                                                                    <rect key="frame" x="0.0" y="0.0" width="20" height="53"/>
+                                                                    <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                    <constraints>
+                                                                        <constraint firstAttribute="height" constant="20" id="A3V-kw-D6W"/>
+                                                                        <constraint firstAttribute="width" constant="20" id="eis-Hk-Dup"/>
+                                                                    </constraints>
+                                                                </imageView>
+                                                            </subviews>
+                                                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="trailing" secondItem="sgt-hq-83h" secondAttribute="trailing" id="IdI-wk-WGc"/>
+                                                                <constraint firstAttribute="bottom" secondItem="sgt-hq-83h" secondAttribute="bottom" id="X0R-A7-fIK"/>
+                                                                <constraint firstItem="sgt-hq-83h" firstAttribute="top" secondItem="ftZ-uB-KXx" secondAttribute="top" id="sv5-De-k9C"/>
+                                                                <constraint firstItem="sgt-hq-83h" firstAttribute="leading" secondItem="ftZ-uB-KXx" secondAttribute="leading" id="w62-et-baM"/>
+                                                            </constraints>
+                                                        </view>
+                                                    </subviews>
+                                                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="bottom" secondItem="zKu-od-9xN" secondAttribute="bottom" id="8ba-v7-pLS"/>
+                                                        <constraint firstItem="EyA-Yy-jh4" firstAttribute="leading" secondItem="K2E-er-UiS" secondAttribute="leading" constant="24" id="Hip-my-LQc"/>
+                                                        <constraint firstAttribute="bottom" secondItem="EyA-Yy-jh4" secondAttribute="bottom" id="KLU-fO-BqX"/>
+                                                        <constraint firstItem="zKu-od-9xN" firstAttribute="leading" secondItem="EyA-Yy-jh4" secondAttribute="trailing" constant="24" id="PsK-Km-bSh"/>
+                                                        <constraint firstItem="EyA-Yy-jh4" firstAttribute="top" secondItem="K2E-er-UiS" secondAttribute="top" id="SxE-IT-c0o"/>
+                                                        <constraint firstAttribute="bottom" secondItem="ftZ-uB-KXx" secondAttribute="bottom" id="lEg-to-w9K"/>
+                                                        <constraint firstItem="ftZ-uB-KXx" firstAttribute="leading" secondItem="zKu-od-9xN" secondAttribute="trailing" constant="24" id="v2d-9Z-AZu"/>
+                                                        <constraint firstItem="zKu-od-9xN" firstAttribute="top" secondItem="K2E-er-UiS" secondAttribute="top" id="w1s-Go-HCT"/>
+                                                        <constraint firstItem="ftZ-uB-KXx" firstAttribute="top" secondItem="K2E-er-UiS" secondAttribute="top" id="xsy-XU-mzE"/>
+                                                        <constraint firstAttribute="trailing" secondItem="ftZ-uB-KXx" secondAttribute="trailing" constant="32" id="zMY-0k-3UE"/>
+                                                    </constraints>
+                                                </view>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="K2E-er-UiS" firstAttribute="top" secondItem="8sb-X1-dTm" secondAttribute="top" constant="36" id="0uP-r9-BOG"/>
+                                                <constraint firstAttribute="bottom" secondItem="K2E-er-UiS" secondAttribute="bottom" constant="36" id="Ftm-9i-sil"/>
+                                                <constraint firstAttribute="trailing" secondItem="K2E-er-UiS" secondAttribute="trailing" id="rgs-aa-gDZ"/>
+                                                <constraint firstItem="K2E-er-UiS" firstAttribute="leading" secondItem="8sb-X1-dTm" secondAttribute="leading" id="wpW-W9-9C9"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="encryptingCategoryButton" destination="zKu-od-9xN" id="cI8-Qm-om7"/>
+                                        </connections>
+                                    </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="SettingsChoiceCell" rowHeight="126" id="DcP-fJ-3lt" customClass="SettingsChoiceCell" customModule="MoppApp" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="315" width="375" height="126"/>
+                                        <rect key="frame" x="0.0" y="440" width="375" height="126"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="DcP-fJ-3lt" id="cT5-Ed-aRg">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="126"/>
@@ -253,7 +341,7 @@
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="SettingsTimeStampCell" rowHeight="91" id="oWS-ur-juU" customClass="SettingsTimeStampCell" customModule="MoppApp" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="441" width="375" height="91"/>
+                                        <rect key="frame" x="0.0" y="566" width="375" height="91"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="oWS-ur-juU" id="TQD-FB-ySn">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="91"/>
@@ -291,7 +379,7 @@
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="SettingsResetCell" rowHeight="124.99999988079071" id="1yr-XE-Rqx" customClass="SettingsResetCell" customModule="MoppApp" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="532" width="375" height="125"/>
+                                        <rect key="frame" x="0.0" y="657" width="375" height="125"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="1yr-XE-Rqx" id="NK1-zD-Iv7">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="125"/>
@@ -2439,6 +2527,14 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eps-lI-LAd" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3133.5999999999999" y="-1377.2113943028487"/>
+        </scene>
+        <!--Settings Encrypting View Controller-->
+        <scene sceneID="lk6-xE-Tpm">
+            <objects>
+                <hostingController storyboardIdentifier="SettingsEncryptingViewController" id="ibd-Gy-5ac" customClass="SettingsEncryptingViewController" customModule="MoppUI" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="RQm-a9-hXL" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1790" y="-2189"/>
         </scene>
     </scenes>
     <resources>
