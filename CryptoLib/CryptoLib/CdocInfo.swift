@@ -27,6 +27,12 @@ public class CdocInfo: NSObject {
     public let addressees: [Addressee]
     public let dataFiles: [CryptoDataFile]
 
+    @objc public init(addressees: [Addressee]) {
+        format = String()
+        self.addressees = addressees
+        self.dataFiles = []
+    }
+
     @objc public init(cdoc1Path path: String) throws {
         guard let parser = XMLParser(contentsOf: URL(fileURLWithPath: path)) else {
             NSLog("Error: Unable to read file at \(path)")

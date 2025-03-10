@@ -189,7 +189,7 @@ class ContainerViewController : MoppViewController, ContainerActions, PreviewAct
         
         let containerExtension = URL(fileURLWithPath: containerPath).pathExtension
         
-        LandingViewController.shared.containerType = containerExtension.isCdocContainerExtension ? .cdoc : .asic
+        LandingViewController.shared.containerType = containerExtension.isCryptoContainerExtension ? .cdoc : .asic
         
         landingViewController.tabButtonsDelegate = self
 
@@ -846,10 +846,10 @@ extension ContainerViewController : ContainerHeaderDelegate {
         let asicContainer: MoppLibContainer? = self.containerViewDelegate?.getContainer()
         let cdocContainer: CryptoContainer? = self.cryptoContainerViewDelegate?.getContainer()
 
-        if let signingContainer = asicContainer, !signingContainer.filePath.isCdocContainerExtension {
+        if let signingContainer = asicContainer, !signingContainer.filePath.isCryptoContainerExtension {
             currentFileName = URL(fileURLWithPath: signingContainer.filePath).deletingPathExtension().lastPathComponent
             containerExtension = URL(fileURLWithPath: signingContainer.filePath).pathExtension
-        } else if let cryptoContainer = cdocContainer, cryptoContainer.filePath.pathExtension == ContainerFormatCdoc {
+        } else if let cryptoContainer = cdocContainer, cryptoContainer.filePath.isCryptoContainerExtension {
             currentFileName = URL(fileURLWithPath: cryptoContainer.filePath as String).deletingPathExtension().lastPathComponent
             containerExtension = URL(fileURLWithPath: (cryptoContainer.filePath as String)).pathExtension
         }

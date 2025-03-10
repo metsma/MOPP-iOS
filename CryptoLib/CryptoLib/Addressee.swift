@@ -31,6 +31,20 @@ public class Addressee: NSObject {
     public let certType: CertType
     public var validTo: Date?
 
+    @objc public init(data: Data, cn: String, givenName: String?, surname: String?, serialNumber: String?, certType: CertType, validTo: Date?) {
+        self.identifier = cn
+        self.data = data
+        self.givenName = givenName
+        self.surname = surname
+        self.serialNumber = serialNumber
+        self.certType = certType
+        self.validTo = validTo
+    }
+
+    @objc public convenience init(data: Data, cn: String) {
+        self.init(data: data, cn: cn, givenName: nil, surname: nil, serialNumber: nil, certType: .UnknownType, validTo: nil)
+    }
+
     init(cert: Data, x509: X509Certificate?) {
         data = cert
         let cn = x509?.subject(oid: .commonName)?.joined(separator: ",") ?? ""

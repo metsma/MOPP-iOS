@@ -26,13 +26,93 @@
 #import <CryptoLib/CryptoLib-Swift.h>
 
 #include <cdoc/CdocReader.h>
+#include <cdoc/Configuration.h>
 #include <cdoc/Lock.h>
+#include <cdoc/NetworkBackend.h>
 #include <cdoc/Recipient.h>
+
+@implementation Addressee (label)
+
+- (instancetype)initWithLabel:(const std::string &)label pub:(NSData*)pub {
+    std::map<std::string, std::string> info = libcdoc::Recipient::parseLabel(label);
+    id cn = info.contains("cn") ? [NSString stringWithStdString:info["cn"]] : nil;
+    id first = info.contains("first_name") ? [NSString stringWithStdString:info["first_name"]] : nil;
+    id last = info.contains("last_name") ? [NSString stringWithStdString:info["last_name"]] : nil;
+    id serial = info.contains("serial_number") ? [NSString stringWithStdString:info["serial_number"]] : nil;
+    id type = info.contains("type") ? [NSString stringWithStdString:info["type"]] : nil;
+    CertType certType = CertTypeUnknownType;
+    if ([type isEqualToString:@"ID-card"]) {
+        certType = CertTypeIDCardType;
+    } else if ([type isEqualToString:@"Digi-ID"]) {
+        certType = CertTypeDigiIDType;
+    } else if ([type isEqualToString:@"Digi-ID E-RESIDENT"]) {
+        certType = CertTypeEResidentType;
+    }
+    id validTo = nil;
+    if (info.contains("server_exp")) {
+        long long epochTime = [[NSString stringWithStdString:info["server_exp"]] longLongValue];
+        validTo = [NSDate dateWithTimeIntervalSince1970:epochTime];
+    }
+    if (self = [self initWithData:pub cn:cn givenName:first surname:last serialNumber:serial certType:certType validTo:validTo]) {
+    }
+    return self;
+}
+
+@end
+
+struct Settings: public libcdoc::Configuration {
+    std::string getValue(std::string_view domain, std::string_view param) const final {
+        if(param == KEYSERVER_FETCH_URL)
+            return [CDoc2Settings.getFetchURL toString];
+        if(param == KEYSERVER_SEND_URL)
+            return [CDoc2Settings.getPostURL toString];
+        return {};
+    }
+};
+
+struct Token: public SmartCardTokenWrapper, public libcdoc::NetworkBackend
+{
+    std::vector<uint8_t> cert;
+
+    Token(id<AbstractSmartToken> smartToken, std::vector<uint8_t> _cert)
+        : SmartCardTokenWrapper(smartToken)
+        , cert(_cert)
+    {}
+
+    libcdoc::result_t getClientTLSCertificate(std::vector<uint8_t> &dst) final {
+        dst = cert;
+        return libcdoc::OK;
+    }
+
+    libcdoc::result_t signTLS(std::vector<uint8_t> &dst, libcdoc::CryptoBackend::HashAlgorithm algorithm, const std::vector<uint8_t> &digest) final {
+        return sign(dst, algorithm, digest, 0);
+    }
+};
 
 @implementation Decrypt
 
 + (CdocInfo*)cdocInfo:(NSString *)fullPath error:(NSError**)error {
-    return [[CdocInfo alloc] initWithCdoc1Path:fullPath error:error];
+    if([fullPath.pathExtension caseInsensitiveCompare:@"cdoc"] == NSOrderedSame) {
+        return [[CdocInfo alloc] initWithCdoc1Path:fullPath error:error];
+    }
+
+    std::unique_ptr<libcdoc::CDocReader> reader(libcdoc::CDocReader::createReader(fullPath.UTF8String, nullptr, nullptr, nullptr));
+    if(!reader) {
+        return nil;
+    }
+    NSMutableArray<Addressee*> *addressees = [[NSMutableArray alloc] init];
+    for(const libcdoc::Lock &lock: reader->getLocks())
+    {
+        if(lock.isCertificate()) {
+            [addressees addObject:[[Addressee alloc] initWithLabel:lock.label pub:[NSData dataFromVector:lock.getBytes(libcdoc::Lock::CERT)]]];
+        } else if(lock.isPKI()) {
+            [addressees addObject:[[Addressee alloc] initWithLabel:lock.label pub:[NSData dataFromVector:lock.getBytes(libcdoc::Lock::RCPT_KEY)]]];
+        } else {
+            [addressees addObject:[[Addressee alloc] initWithData:[NSData data] cn:@"Unknown capsule"]];
+        }
+    }
+
+    return [[CdocInfo alloc] initWithAddressees:addressees];
 }
 
 + (void)decryptFile:(NSString *)fullPath withToken:(id<AbstractSmartToken>)smartToken
@@ -43,8 +123,10 @@
             return completion(nil, error);
         }
 
-        SmartCardTokenWrapper token(smartToken);
-        std::unique_ptr<libcdoc::CDocReader> reader(libcdoc::CDocReader::createReader(fullPath.UTF8String, nullptr, &token, nullptr));
+        Token token(smartToken, cert);
+        Settings conf;
+
+        std::unique_ptr<libcdoc::CDocReader> reader(libcdoc::CDocReader::createReader(fullPath.UTF8String, &conf, &token, &token));
 
         auto idx = reader->getLockForCert(cert);
         if(idx < 0) {

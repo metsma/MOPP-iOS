@@ -3,7 +3,7 @@
 export PATH=$PATH:/usr/local/bin:/opt/homebrew/bin
 SOURCE_DIR=${DERIVED_SOURCES_DIR}/cdoc
 if [ ! -d ${SOURCE_DIR} ]; then
-    git clone https://github.com/open-eid/libcdoc.git ${SOURCE_DIR};
+    git clone -b expire https://github.com/open-eid/libcdoc.git ${SOURCE_DIR};
 fi
 cmake \
     -DFRAMEWORK_DESTINATION=${BUILT_PRODUCTS_DIR} \

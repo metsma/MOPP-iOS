@@ -119,7 +119,7 @@ class RecentContainersViewController : MoppModalViewController {
                 let fileURL = URL(fileURLWithPath: fileName)
                 let pathExtension = fileURL.pathExtension
                 if !pathExtension.isEmpty {
-                    return pathExtension.isAsicContainerExtension || pathExtension.isCdocContainerExtension || pathExtension.isPdfContainerExtension
+                    return pathExtension.isAsicContainerExtension || pathExtension.isCryptoContainerExtension || pathExtension.isPdfContainerExtension
                 }
                 
                 return false

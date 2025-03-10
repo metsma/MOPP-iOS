@@ -42,6 +42,12 @@ digidoc::Exception::ExceptionCode parseException(const digidoc::Exception &e) {
     return code;
 }
 
+@implementation NSString (Digidoc)
++ (NSString*)stdstring:(const std::string&)str {
+    return str.empty() ? [NSString string] : @(str.c_str());
+}
+@end
+
 @implementation MoppLibError (digidocpp)
 
 + (void)setException:(const digidoc::Exception &)exception toError:(NSError**)error {
@@ -70,10 +76,9 @@ digidoc::Exception::ExceptionCode parseException(const digidoc::Exception &e) {
         case 63:
             return [MoppLibError error:MoppLibErrorCodeFileNameTooLong];
         default:
-            return [MoppLibError errorWithMessage:[NSString stringWithUTF8String:exception.msg().c_str()]];
+            return [MoppLibError errorWithMessage:[NSString stdstring:exception.msg()]];
     }
 }
-
 @end
 
 class WebSigner: public digidoc::Signer
@@ -256,7 +261,7 @@ static std::unique_ptr<digidoc::Signer> signer{};
     std::vector<std::string> signatureRoles = signature->signerRoles();
     NSMutableArray* signatureRolesList = [NSMutableArray arrayWithCapacity: signatureRoles.size()];
     for (auto const& signatureRole: signatureRoles) {
-        [signatureRolesList addObject: [NSString stringWithUTF8String:signatureRole.c_str()]];
+        [signatureRolesList addObject: [NSString stdstring:signatureRole]];
     }
 
     moppLibSignature.roleAndAddressData =

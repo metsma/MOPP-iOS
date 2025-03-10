@@ -26,13 +26,34 @@
 #import <CryptoLib/CryptoLib-Swift.h>
 
 #include <cdoc/CDocWriter.h>
+#include <cdoc/Configuration.h>
+#include <cdoc/NetworkBackend.h>
 #include <cdoc/Recipient.h>
+
+struct Settings: public libcdoc::Configuration {
+    std::string getValue(std::string_view domain, std::string_view param) const final {
+        if(param == KEYSERVER_FETCH_URL)
+            return [CDoc2Settings.getFetchURL toString];
+        if(param == KEYSERVER_SEND_URL)
+            return [CDoc2Settings.getPostURL toString];
+        return {};
+    }
+};
+
+struct Network: public libcdoc::NetworkBackend {
+    libcdoc::result_t getPeerTLSCertificates(std::vector<std::vector<uint8_t>> &dst, const std::string& url) final {
+        return libcdoc::NetworkBackend::getPeerTLSCertificates(dst);
+    }
+};
 
 @implementation Encrypt
 
 + (void)encryptFile:(NSString *)fullPath withDataFiles:(NSArray<CryptoDataFile*> *)dataFiles withAddressees:(NSArray<Addressee*> *)addressees
          completion:(void (^)(NSError*))completion {
-    std::unique_ptr<libcdoc::CDocWriter> writer(libcdoc::CDocWriter::createWriter(1, fullPath.UTF8String, nullptr, nullptr, nullptr));
+    int version = [fullPath.pathExtension caseInsensitiveCompare:@"cdoc2"] == NSOrderedSame ? 2 : 1;
+    Settings conf;
+    Network network;
+    std::unique_ptr<libcdoc::CDocWriter> writer(libcdoc::CDocWriter::createWriter(version, fullPath.UTF8String, &conf, nullptr, &network));
 
     if (!writer) {
         return completion([NSError cryptoError:@"Failed to create writer"]);
@@ -42,9 +63,18 @@
         return completion([NSError cryptoError:@"Failed to start encryption"]);
     }
 
-    for (Addressee *addressee in addressees) {
-        if (writer->addRecipient(libcdoc::Recipient::makeCertificate({}, [addressee.data toVector])) != 0) {
-            return completion([NSError cryptoError:@"Failed to add recipien"]);
+    if (version == 2 && CDoc2Settings.isOnlineEncryptionEnabled) {
+        NSString *server_id = CDoc2Settings.getSelectedService;
+        for (Addressee *addressee in addressees) {
+            if (writer->addRecipient(libcdoc::Recipient::makeServer({}, [addressee.data toVector], [server_id toString])) != 0) {
+                return completion([NSError cryptoError:@"Failed to add recipien"]);
+            }
+        }
+    } else {
+        for (Addressee *addressee in addressees) {
+            if (writer->addRecipient(libcdoc::Recipient::makeCertificate({}, [addressee.data toVector])) != 0) {
+                return completion([NSError cryptoError:@"Failed to add recipien"]);
+            }
         }
     }
 

@@ -170,7 +170,7 @@ extension PreviewActions where Self: ContainerViewController {
                         } else {
                             openAsicContainerPreview(isPDF)
                         }
-                    } else if dataFileExt.isCdocContainerExtension {
+                    } else if dataFileExt.isCryptoContainerExtension {
                         openCdocContainerPreview()
                     } else {
                         openContentPreview(destinationPath)
@@ -190,7 +190,7 @@ extension PreviewActions where Self: ContainerViewController {
                     } else {
                         openAsicContainerPreview(isPDF)
                     }
-                } else if dataFileExt.isCdocContainerExtension {
+                } else if dataFileExt.isCryptoContainerExtension {
                     openCdocContainerPreview()
                 } else {
                     openContentPreview(destinationPath)

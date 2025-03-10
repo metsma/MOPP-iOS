@@ -59,8 +59,8 @@ extension ContainerActions where Self: UIViewController {
                 printLog(error?.localizedDescription ?? "No error description")
                 if topSigningViewController.presentedViewController is FileImportProgressViewController {
                     self?.dismiss(animated: true, completion: {
-                        if let nsError = error as NSError?, !nsError.userInfo.isEmpty, nsError.userInfo[NSLocalizedDescriptionKey] != nil {
-                            self?.showErrorMessage(message: nsError.userInfo[NSLocalizedDescriptionKey] as? String ?? L(.fileImportOpenExistingFailedAlertMessage, [""]))
+                        if let message = error?.localizedDescription, !message.isEmpty {
+                            self?.showErrorMessage(message: message)
                         } else {
                             self?.showErrorMessage(message: L(.fileImportOpenExistingFailedAlertMessage, [""]))
                         }
@@ -77,7 +77,7 @@ extension ContainerActions where Self: UIViewController {
 
                 let ext = urls.first!.pathExtension
                 if landingViewController.containerType == nil {
-                    if ext.isCdocContainerExtension {
+                    if ext.isCryptoContainerExtension {
                         landingViewController.containerType = .cdoc
                     } else {
                         landingViewController.containerType = .asic
@@ -86,7 +86,7 @@ extension ContainerActions where Self: UIViewController {
                 let isAsicOrPadesContainer = (ext.isAsicContainerExtension ||
                                               (ext == ContainerFormatPDF &&
                                                SiVaUtil.isSignedPDF(url: urls.first! as CFURL))) && landingViewController.containerType == .asic
-                let isCdocContainer = ext.isCdocContainerExtension && landingViewController.containerType == .cdoc
+                let isCdocContainer = ext.isCryptoContainerExtension && landingViewController.containerType == .cdoc
                 if (isAsicOrPadesContainer || isCdocContainer) && urls.count == 1 {
                     SiVaUtil.setIsSentToSiva(isSent: false)
                     
