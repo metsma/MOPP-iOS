@@ -27,8 +27,6 @@ class TokenFlowSelectionViewController : MoppViewController {
     @IBOutlet weak var centerViewCenterCSTR: NSLayoutConstraint!
     @IBOutlet weak var centerViewOutofscreenCSTR: NSLayoutConstraint!
     @IBOutlet weak var centerViewKeyboardCSTR: NSLayoutConstraint!
-    @IBOutlet var centerLandscapeCSTR: NSLayoutConstraint!
-    @IBOutlet var tokenFlowMethodButtons: [UIButton]!
     @IBOutlet weak var tokenFlowView: UIView!
     @IBOutlet weak var containerView: UIView!
     @IBOutlet weak var tokenNavbarView: UIView!
@@ -38,14 +36,12 @@ class TokenFlowSelectionViewController : MoppViewController {
     @IBOutlet weak var idCardButton: ScaledButton!
     @IBOutlet weak var nfcButton: ScaledButton!
 
+    @IBOutlet var centerLandscapeCSTR: NSLayoutConstraint!
+    @IBOutlet var tokenFlowMethodButtons: [UIButton]!
     @IBOutlet weak var tokenViewContainerTopConstraint: NSLayoutConstraint!
-    @IBOutlet weak var tokenFlowViewLeadingCSTR: NSLayoutConstraint!
-    @IBOutlet weak var tokenFlowViewTrailingCSTR: NSLayoutConstraint!
     @IBOutlet weak var tokenFlowViewHeightCSTR: NSLayoutConstraint!
     @IBOutlet weak var containerViewHeightCSTR: NSLayoutConstraint!
-    @IBOutlet weak var tokenFlowViewCenterXCSTR: NSLayoutConstraint!
-    @IBOutlet weak var tokenFlowViewCenterYCSTR: NSLayoutConstraint!
-    
+
     
     var isFlowForDecrypting = false
     weak var mobileIdEditViewControllerDelegate: MobileIDEditViewControllerDelegate!
@@ -54,7 +50,8 @@ class TokenFlowSelectionViewController : MoppViewController {
     weak var nfcEditViewControllerDelegate: NFCEditViewControllerDelegate!
 
     var containerPath: String!
-    
+    var addressees = [Addressee]()
+
     var isSwitchingBlockedByTransition: Bool = false
     
     var viewAccessibilityElements: [UIView] = []
@@ -189,7 +186,7 @@ extension TokenFlowSelectionViewController {
         case .idCard:
             let idCardSignVC = UIStoryboard.tokenFlow.instantiateViewController(of: IdCardViewController.self)
             idCardSignVC.containerPath = containerPath
-            centerLandscapeCSTR.isActive = false
+            idCardSignVC.addressees = addressees
             if isFlowForDecrypting {
                 idCardSignVC.isActionDecryption = true
                 idCardSignVC.decryptDelegate = idCardDecryptViewControllerDelegate
@@ -199,7 +196,6 @@ extension TokenFlowSelectionViewController {
             viewAccessibilityElements = [idCardButton, containerView, mobileIDButton, smartIDButton, nfcButton, containerView]
         case .nfc:
             let nfcSignVC = UIStoryboard.tokenFlow.instantiateViewController(of: NFCEditViewController.self)
-            centerLandscapeCSTR.isActive = false
             nfcSignVC.delegate = nfcEditViewControllerDelegate
             newViewController = nfcSignVC
             viewAccessibilityElements = [nfcButton, containerView, idCardButton, mobileIDButton, smartIDButton, containerView]
@@ -269,33 +265,20 @@ extension TokenFlowSelectionViewController {
         let currentOrientation = UIApplication.shared.windows.first?.windowScene?.interfaceOrientation ?? .portrait
 
         if currentOrientation.isLandscape {
-            tokenFlowViewLeadingCSTR.constant = 48
-            tokenFlowViewTrailingCSTR.constant = 48
-
             tokenFlowViewTopAnchor?.isActive = true
             tokenFlowViewBottomAnchor?.isActive = true
-
             if UIDevice.current.userInterfaceIdiom == .pad {
                 tokenFlowViewHeightCSTR.constant = 500
             } else {
                 tokenFlowViewHeightCSTR.constant = mainViewHeight - 50
             }
-            containerViewHeightCSTR.constant = tokenFlowViewHeightCSTR.constant - tokenNavbarView.frame.height
-            centerLandscapeCSTR.constant = tokenFlowViewHeightCSTR.constant * centerLandscapeCSTR.multiplier
         } else if currentOrientation.isPortrait {
-            tokenFlowViewLeadingCSTR.constant = 16
-            tokenFlowViewTrailingCSTR.constant = 16
-
             tokenFlowViewTopAnchor?.isActive = false
             tokenFlowViewBottomAnchor?.isActive = false
-
-            tokenFlowViewCenterXCSTR.isActive = true
-            tokenFlowViewCenterYCSTR.isActive = true
-
             tokenFlowViewHeightCSTR.constant = 475
-            containerViewHeightCSTR.constant = tokenFlowViewHeightCSTR.constant - tokenNavbarView.frame.height
-            centerLandscapeCSTR.constant = tokenFlowViewHeightCSTR.constant * centerLandscapeCSTR.multiplier
         }
+        containerViewHeightCSTR.constant = tokenFlowViewHeightCSTR.constant - tokenNavbarView.frame.height
+        centerLandscapeCSTR.constant = tokenFlowViewHeightCSTR.constant * centerLandscapeCSTR.multiplier
     }
     
     @IBAction func didTapSignMethodButton(sender: UIButton) {
@@ -331,11 +314,7 @@ extension TokenFlowSelectionViewController {
     }
     
     func handleConstraintInLandscape() {
-        if isDeviceOrientationLandscape() {
-            centerLandscapeCSTR.isActive = true
-        } else {
-            centerLandscapeCSTR.isActive = false
-        }
+        centerLandscapeCSTR.isActive = isDeviceOrientationLandscape()
     }
 }
 

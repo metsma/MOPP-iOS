@@ -77,4 +77,15 @@ public class Addressee: NSObject {
             certType == other.certType &&
             validTo == other.validTo
     }
+
+    static public func == (lhs: Addressee, rhs: Data) -> Bool {
+        if lhs.data == rhs {
+            return true
+        }
+        if let key = try? X509Certificate(der: rhs).publicKey?.derEncodedKey,
+           lhs.data == key {
+            return true
+        }
+        return false
+    }
 }

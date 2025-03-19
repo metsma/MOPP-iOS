@@ -232,21 +232,11 @@ extension RecentContainersViewController : UITableViewDelegate {
                     }
                 } else {
                     LandingViewController.shared.containerType = .cdoc
-                    Task(priority: .background) {
-                        do {
-                            let cdocInfo = try Decrypt.cdocInfo(path.path)
-                            await MainActor.run {
-                                let cryptoContainer = CryptoContainerViewController.instantiate()
-                                cryptoContainer.containerPath = path.path
-                                cryptoContainer.container = CryptoContainer(filename: path.lastPathComponent, filePath: path.path, cdocInfo: cdocInfo)
-                                cryptoContainer.state = .opened
-                                cryptoContainer.isContainerEncrypted = true
-                                navController = (LandingViewController.shared.viewController(for: .cryptoTab) as? UINavigationController)!
-                                navController.pushViewController(cryptoContainer, animated: true)
-                            }
-                        } catch {
-                            await MainActor.run { failure(L(.fileImportOpenExistingFailedAlertMessage, [filename])) }
-                        }
+                    CryptoContainerViewController.openContainer(filePath: path.path) { controller in
+                        navController = (LandingViewController.shared.viewController(for: .cryptoTab) as? UINavigationController)!
+                        navController.pushViewController(controller, animated: true)
+                    } failure: { error in
+                        failure(L(.fileImportOpenExistingFailedAlertMessage, [filename]))
                     }
                 }
             }

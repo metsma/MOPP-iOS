@@ -69,6 +69,7 @@ class LandingViewController : UIViewController, NativeShare, ContainerActions
         case shareButton
         case signButton
         case encryptButton
+        case encryptLongTermButton
         case decryptButton
         case confirmButton
     }
@@ -303,6 +304,11 @@ extension LandingViewController {
                 break
             case "encryptButton":
                 view.accessibilityLabel = L(.tabEncryptButtonAccessibility).lowercased()
+                view.accessibilityTraits = UIAccessibilityTraits.button
+                view.accessibilityUserInputLabels = [L(.voiceControlTabEncrypt)]
+                break
+            case "encryptLongTermButton":
+                view.accessibilityLabel = L(.tabEncryptLongTermButtonAccessibility).lowercased()
                 view.accessibilityTraits = UIAccessibilityTraits.button
                 view.accessibilityUserInputLabels = [L(.voiceControlTabEncrypt)]
                 break

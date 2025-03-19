@@ -27,6 +27,7 @@
 
 @interface NSError (CryptoLib)
 + (NSError*)cryptoError:(NSString*)msg;
++ (id)cryptoError:(NSString*)msg error:(NSError**)error;
 @end
 
 @interface NSString (std_string)
@@ -71,5 +72,12 @@
 @implementation NSError (CryptoLib)
 + (NSError*)cryptoError:(NSString *)msg {
     return [[NSError alloc] initWithDomain:@"ee.ria.digidoc.CryptoLib" code:1000 userInfo: @{NSLocalizedDescriptionKey: msg}];
+}
+
++ (id)cryptoError:(NSString*)msg error:(NSError**)error {
+    if (error) {
+        *error = [NSError cryptoError:msg];
+    }
+    return nil;
 }
 @end

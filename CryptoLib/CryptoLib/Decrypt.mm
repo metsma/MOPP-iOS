@@ -98,7 +98,7 @@ struct Token: public SmartCardTokenWrapper, public libcdoc::NetworkBackend
 
     std::unique_ptr<libcdoc::CDocReader> reader(libcdoc::CDocReader::createReader(fullPath.UTF8String, nullptr, nullptr, nullptr));
     if(!reader) {
-        return nil;
+        return [NSError cryptoError:@"Parsing failed" error:error];
     }
     NSMutableArray<Addressee*> *addressees = [[NSMutableArray alloc] init];
     for(const libcdoc::Lock &lock: reader->getLocks())
@@ -107,6 +107,8 @@ struct Token: public SmartCardTokenWrapper, public libcdoc::NetworkBackend
             [addressees addObject:[[Addressee alloc] initWithLabel:lock.label pub:[NSData dataFromVector:lock.getBytes(libcdoc::Lock::CERT)]]];
         } else if(lock.isPKI()) {
             [addressees addObject:[[Addressee alloc] initWithLabel:lock.label pub:[NSData dataFromVector:lock.getBytes(libcdoc::Lock::RCPT_KEY)]]];
+        } else if(lock.isSymmetric()) {
+            [addressees addObject:[[Addressee alloc] initWithData:[NSData data] cn:[NSString stringWithStdString:lock.label]]];
         } else {
             [addressees addObject:[[Addressee alloc] initWithData:[NSData data] cn:@"Unknown capsule"]];
         }
@@ -136,39 +138,65 @@ struct Token: public SmartCardTokenWrapper, public libcdoc::NetworkBackend
         if(reader->getFMK(fmk, unsigned(idx)) != 0 || fmk.empty()) {
             return completion(nil, token.lastError() ?: [NSError cryptoError:@"Failed to get FMK"]);
         }
-        if(reader->beginDecryption(fmk) != 0) {
-            return completion(nil, [NSError cryptoError:@"Failed to start encryption"]);
-        }
-
-        NSMutableDictionary<NSString*,NSData*> *response = [NSMutableDictionary new];
-        std::string name;
-        int64_t size{};
-        while((reader->nextFile(name, size)) == 0)
-        {
-            NSMutableData *data = [[NSMutableData alloc] initWithLength:16 * 1024];
-            NSUInteger currentLength = 0;
-
-            uint64_t bytesRead = 0;
-            while (true) {
-                bytesRead = reader->readData(reinterpret_cast<uint8_t *>(data.mutableBytes) + currentLength, 16 * 1024);
-                if (bytesRead < 0) {
-                    NSLog(@"Error reading data from file: %s", name.c_str());
-                    return completion(nil, [NSError cryptoError:@"Failed to decrypt file"]);
-                }
-
-                currentLength += bytesRead;
-                [data setLength:currentLength];
-                if (bytesRead == 0) {
-                    break;
-                }
-                [data increaseLengthBy:16 * 1024];
-            }
-            [response setObject:data forKey:[NSString stringWithStdString:name]];
-        }
-        if (reader->finishDecryption() != 0)
-            return completion(nil, [NSError cryptoError:@"Failed to end encryption"]);
-        return completion(response, nil);
+        completion([self decryptReader:*reader withFMK:fmk error:&error], error);
     }];
+}
+
++ (NSDictionary<NSString*,NSData*> *)decryptFile:(NSString *)fullPath withPassword:(NSString*)password error:(NSError**)error {
+    struct PasswordBackend: public libcdoc::CryptoBackend {
+        NSString *password;
+        PasswordBackend(NSString *pass) : password(pass) {}
+        libcdoc::result_t getSecret(std::vector<uint8_t>& dst, unsigned int idx) final {
+            dst = [[password dataUsingEncoding:NSUTF8StringEncoding] toVector];
+            return libcdoc::OK;
+        }
+    } crypto {password};
+    std::unique_ptr<libcdoc::CDocReader> reader(libcdoc::CDocReader::createReader(fullPath.UTF8String, nullptr, &crypto, nullptr));
+
+    auto idx = 0; // TODO: reader->getLockForCert(network.cert);
+    if(idx < 0)
+        return [NSError cryptoError:@"Decrypting failed" error:error];
+    std::vector<uint8_t> fmk;
+    if(reader->getFMK(fmk, unsigned(idx)) != 0 || fmk.empty()) {
+        return [NSError cryptoError:@"Decrypting failed" error:error];
+    }
+    return [self decryptReader:*reader withFMK:fmk error:error];
+}
+
++ (NSDictionary<NSString*,NSData*> *)decryptReader:(libcdoc::CDocReader&)reader withFMK:(const std::vector<uint8_t>&)fmk error:(NSError**)error {
+
+    if(reader.beginDecryption(fmk) != 0) {
+        return [NSError cryptoError:@"Failed to start encryption" error:error];
+    }
+
+    NSMutableDictionary<NSString*,NSData*> *response = [NSMutableDictionary new];
+    std::string name;
+    int64_t size{};
+    while((reader.nextFile(name, size)) == 0)
+    {
+        NSMutableData *data = [[NSMutableData alloc] initWithLength:16 * 1024];
+        NSUInteger currentLength = 0;
+
+        uint64_t bytesRead = 0;
+        while (true) {
+            bytesRead = reader.readData(reinterpret_cast<uint8_t *>(data.mutableBytes) + currentLength, 16 * 1024);
+            if (bytesRead < 0) {
+                NSLog(@"Error reading data from file: %s", name.c_str());
+                return [NSError cryptoError:@"Failed to decrypt file" error:error];
+            }
+
+            currentLength += bytesRead;
+            [data setLength:currentLength];
+            if (bytesRead == 0) {
+                break;
+            }
+            [data increaseLengthBy:16 * 1024];
+        }
+        [response setObject:data forKey:[NSString stringWithStdString:name]];
+    }
+    if (reader.finishDecryption() != 0)
+        return [NSError cryptoError:@"Failed to end encryption" error:error];
+    return response;
 }
 
 @end

@@ -179,22 +179,12 @@ extension ContainerActions where Self: UIViewController {
                 printLog("Unable to delete contents of Documents/Inbox directory: \(error.localizedDescription)")
             }
         } else {
-            Task(priority: .background) { [newFilePath] in
-                do {
-                    let cdocInfo = try Decrypt.cdocInfo(newFilePath)
-                    await MainActor.run { [newFilePath] in
-                        let containerViewController = CryptoContainerViewController.instantiate()
-                        containerViewController.containerPath = newFilePath
-                        containerViewController.state = .opened
-                        containerViewController.container = CryptoContainer(filename: fileName, filePath: newFilePath, cdocInfo: cdocInfo)
-                        containerViewController.isContainerEncrypted = true
-                        landingViewController.importProgressViewController.dismissRecursively(animated: false) {
-                            navController?.pushViewController(containerViewController, animated: true)
-                        }
-                    }
-                } catch {
-                    await MainActor.run { failure(error as NSError) }
+            CryptoContainerViewController.openContainer(filePath: newFilePath) { controller in
+                landingViewController.importProgressViewController.dismissRecursively(animated: false) {
+                    navController?.pushViewController(controller, animated: true)
                 }
+            } failure: { error in
+                failure(error as NSError)
             }
         }
         url.stopAccessingSecurityScopedResource()

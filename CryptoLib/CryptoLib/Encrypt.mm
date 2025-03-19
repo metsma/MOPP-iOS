@@ -110,4 +110,55 @@ struct Network: public libcdoc::NetworkBackend {
     completion(writer->finishEncryption() == 0 ? nil : [NSError cryptoError:@"Failed to finish encryption"]);
 }
 
++ (void)encryptFile:(NSString *)fullPath withDataFiles:(NSArray<CryptoDataFile*> *)dataFiles withLabel:(NSString*)label withPassword:(NSString *)password success:(void (^)(void))success failure:(void (^)(void))failure {
+    int version = [fullPath.pathExtension caseInsensitiveCompare:@"cdoc2"] == NSOrderedSame ? 2 : 1;
+    Settings conf;
+    struct PasswordBackend: public libcdoc::CryptoBackend {
+        NSString *password;
+        PasswordBackend(NSString *pass) : password(pass) {}
+        libcdoc::result_t getSecret(std::vector<uint8_t>& dst, unsigned int idx) final {
+            dst = [[password dataUsingEncoding:NSUTF8StringEncoding] toVector];
+            return libcdoc::OK;
+        }
+    } crypto {password};
+    libcdoc::NetworkBackend network;
+    std::unique_ptr<libcdoc::CDocWriter> writer(libcdoc::CDocWriter::createWriter(version, fullPath.UTF8String, &conf, &crypto, &network));
+
+    if (!writer) {
+        return dispatch_async(dispatch_get_main_queue(), failure);
+    }
+
+    if (writer->addRecipient(libcdoc::Recipient::makeSymmetric(label.UTF8String, 65536))) {
+        return dispatch_async(dispatch_get_main_queue(), failure);
+    }
+
+    if (writer->beginEncryption() != 0) {
+        return dispatch_async(dispatch_get_main_queue(), failure);
+    }
+
+    for (CryptoDataFile *dataFile in dataFiles) {
+        NSFileHandle *fileHandle = [NSFileHandle fileHandleForReadingAtPath:dataFile.filePath];
+        if (!fileHandle) {
+            NSLog(@"Failed to open file at path: %@", dataFile.filePath);
+            return dispatch_async(dispatch_get_main_queue(), failure);
+        }
+
+        if (writer->addFile(dataFile.filename.UTF8String, [fileHandle seekToEndOfFile]) != 0) {
+            return dispatch_async(dispatch_get_main_queue(), failure);
+        }
+        [fileHandle seekToFileOffset:0];
+
+        NSUInteger blockSize = 1024 * 16;
+        NSData *data;
+        while ((data = [fileHandle readDataOfLength:blockSize]) && data.length > 0) {
+            if (writer->writeData(reinterpret_cast<const uint8_t*>(data.bytes), data.length) != 0) {
+                return dispatch_async(dispatch_get_main_queue(), failure);
+            }
+        }
+        [fileHandle closeFile];
+    }
+    bool result = writer->finishEncryption() == 0;
+    dispatch_async(dispatch_get_main_queue(), result ? success : failure);
+}
+
 @end

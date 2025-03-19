@@ -50,6 +50,7 @@ protocol CryptoContainerViewControllerDelegate: AnyObject {
     func removeSelectedAddressee(index: Int)
     func getContainer() -> CryptoContainer
     func startEncrypting()
+    func startEncryptingLongTerm()
     func startDecrypting()
 }
 
@@ -65,7 +66,6 @@ class ContainerViewController : MoppViewController, ContainerActions, PreviewAct
     var isCreated: Bool = false
     var forcePDFContentPreview: Bool = false
     var startSigningWhenOpened = false
-    var isEncrypted = false
     var isDecrypted = false
     let landingViewController = LandingViewController.shared!
     var isAsicContainer = LandingViewController.shared.containerType == .asic
@@ -236,7 +236,7 @@ class ContainerViewController : MoppViewController, ContainerActions, PreviewAct
 
                 }else{
                     setupNavigationItemForPushedViewController(title: L(.containerEncryptionTitle))
-                    LandingViewController.shared.presentButtons(isForPreview ? [] : [.encryptButton])
+                    LandingViewController.shared.presentButtons(isForPreview ? [] : [.encryptButton, .encryptLongTermButton])
                 }
 
             case .opened:
@@ -389,14 +389,18 @@ class ContainerViewController : MoppViewController, ContainerActions, PreviewAct
 
 extension ContainerViewController : LandingViewControllerTabButtonsDelegate {
     func landingViewControllerTabButtonTapped(tabButtonId: LandingViewController.TabButtonId, sender: UIView, containerType: MoppApp.ContainerType) {
-        if tabButtonId == .signButton && containerType == .asic {
+        switch (tabButtonId, containerType) {
+        case (.signButton, .asic):
             signingContainerViewDelegate.startSigning()
-        } else if tabButtonId == .shareButton {
+        case (.shareButton, _):
             LandingViewController.shared.shareFile(using: URL(fileURLWithPath: containerPath), sender: sender, completion: { bool in })
-        } else if tabButtonId == .encryptButton && containerType == .cdoc {
+        case (.encryptButton, .cdoc):
             cryptoContainerViewDelegate.startEncrypting()
-        } else if tabButtonId == .decryptButton && containerType == .cdoc {
+        case (.encryptLongTermButton, .cdoc):
+            cryptoContainerViewDelegate.startEncryptingLongTerm()
+        case (.decryptButton, .cdoc):
             cryptoContainerViewDelegate.startDecrypting()
+        default: break
         }
     }
     
@@ -620,7 +624,7 @@ extension ContainerViewController : UITableViewDataSource {
                 (signingContainerViewDelegate.getSignaturesCount() == 0 && signingContainerViewDelegate.isContainerSignable())
                 isDownloadButtonShown = true
             } else {
-                isRemoveButtonShown = !isEncrypted || isDecrypted
+                isRemoveButtonShown = isDecrypted
                 isDownloadButtonShown = !isForPreview && (isDecrypted || (state != .opened))
                 cell.isDownloadButtonRefreshed = false
                 isCryptoDocument = true
@@ -644,7 +648,7 @@ extension ContainerViewController : UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withType: ContainerHeaderCell.self, for: indexPath)!
             cell.delegate = self
             let isEditingButtonShown: Bool = !isForPreview && (state == .opened || state == .created) &&
-                (isSignaturesEmpty && !isEncrypted && !isDecrypted)
+                (isSignaturesEmpty && !isDecrypted)
             let containerPath = isAsicContainer ? self.containerViewDelegate.getContainerPath() : String(self.cryptoContainerViewDelegate.getContainer().filePath)
             cell.populate(name: containerViewDelegate.getContainerFilename(), isEditButtonEnabled: isEditingButtonShown,
             containerPath: URL(fileURLWithPath: containerPath))
@@ -1006,7 +1010,7 @@ extension ContainerViewController : UITableViewDelegate {
         case .dataFiles:
             if isCreated && !isAsicContainer {
                 title = L(.cryptoHeaderFilesTitle)
-            } else if isEncrypted {
+            } else if !isDecrypted {
                 title = L(.cryptoEncryptedFilesTitle)
             } else {
                 title = L(.containerHeaderFilesTitle)

@@ -45,7 +45,9 @@ class IdCardViewController : MoppViewController {
     @IBOutlet weak var loadingSpinner: SpinnerView!
 
     var isActionDecryption = false
+    var canDecrypt = false
     var containerPath: String!
+    var addressees = [Addressee]()
     var cardCommands: CardCommands?
     weak var decryptDelegate: IdCardDecryptViewControllerDelegate?
     weak var keyboardDelegate: IdCardSignViewKeyboardDelegate? = nil
@@ -112,7 +114,7 @@ class IdCardViewController : MoppViewController {
     @objc func editingChanged(sender: UITextField) {
         let count = (sender.text?.count ?? 0)
         if self.isActionDecryption {
-            actionButton.isEnabled = count >= 4 && count <= 12
+            actionButton.isEnabled = count >= 4 && count <= 12 && canDecrypt
         } else {
             actionButton.isEnabled = count >= 5 && count <= 12
         }
@@ -451,8 +453,13 @@ extension IdCardViewController : MoppLibCardReaderManagerDelegate {
             Task.detached { [weak self] in
                 do {
                     let moppLibPersonalData = try await cardCommands.readPublicData()
+                    let cert: Data? = await (self?.isActionDecryption ?? false ? try cardCommands.readAuthenticationCertificate() : nil)
                     guard let self else { return }
                     await MainActor.run {
+                        if self.isActionDecryption,
+                            let cert = cert {
+                            self.canDecrypt = self.addressees.contains { addressee in addressee == cert }
+                        }
                         self.idCardPersonalData = moppLibPersonalData
                         self.state = .readyForTokenAction
                     }

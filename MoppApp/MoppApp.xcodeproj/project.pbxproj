@@ -32,6 +32,8 @@
 		4E0F0A1C2D76F87D003F24B9 /* SettingsEncryptingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E0F0A192D76F87D003F24B9 /* SettingsEncryptingView.swift */; };
 		4E0F0A1D2D76F87D003F24B9 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E0F0A1A2D76F87D003F24B9 /* ViewController.swift */; };
 		4E167D882B6D346F001B74A1 /* digidocpp.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4E167D862B6D346F001B74A1 /* digidocpp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		4E31ACF72D89FA59000DF4B8 /* DecryptPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E31ACF02D89FA43000DF4B8 /* DecryptPasswordView.swift */; };
+		4E31ACF92D8A0BC1000DF4B8 /* EncryptPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E31ACF82D8A0BC1000DF4B8 /* EncryptPasswordView.swift */; };
 		4E59080024B0F914001B23A6 /* SmartIDEditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E5907FF24B0F914001B23A6 /* SmartIDEditViewController.swift */; };
 		4E59080224B258C7001B23A6 /* SmartIDChallengeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E59080124B258C6001B23A6 /* SmartIDChallengeViewController.swift */; };
 		4E59080424B2E295001B23A6 /* SmartIDSignature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E59080324B2E295001B23A6 /* SmartIDSignature.swift */; };
@@ -357,6 +359,8 @@
 		4E0F0A192D76F87D003F24B9 /* SettingsEncryptingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsEncryptingView.swift; sourceTree = "<group>"; };
 		4E0F0A1A2D76F87D003F24B9 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		4E167D862B6D346F001B74A1 /* digidocpp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = digidocpp.framework; path = "${DIGIDOCPP_PATH}/lib/digidocpp.framework"; sourceTree = "<absolute>"; };
+		4E31ACF02D89FA43000DF4B8 /* DecryptPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecryptPasswordView.swift; sourceTree = "<group>"; };
+		4E31ACF82D8A0BC1000DF4B8 /* EncryptPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptPasswordView.swift; sourceTree = "<group>"; };
 		4E5907FF24B0F914001B23A6 /* SmartIDEditViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmartIDEditViewController.swift; sourceTree = "<group>"; };
 		4E59080124B258C6001B23A6 /* SmartIDChallengeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmartIDChallengeViewController.swift; sourceTree = "<group>"; };
 		4E59080324B2E295001B23A6 /* SmartIDSignature.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmartIDSignature.swift; sourceTree = "<group>"; };
@@ -658,6 +662,8 @@
 		4E0F0A1B2D76F87D003F24B9 /* MoppUI */ = {
 			isa = PBXGroup;
 			children = (
+				4E31ACF82D8A0BC1000DF4B8 /* EncryptPasswordView.swift */,
+				4E31ACF02D89FA43000DF4B8 /* DecryptPasswordView.swift */,
 				4E0F0A192D76F87D003F24B9 /* SettingsEncryptingView.swift */,
 				4E0F0A1A2D76F87D003F24B9 /* ViewController.swift */,
 			);
@@ -1555,7 +1561,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				4E0F0A1C2D76F87D003F24B9 /* SettingsEncryptingView.swift in Sources */,
+				4E31ACF72D89FA59000DF4B8 /* DecryptPasswordView.swift in Sources */,
 				4E0F0A1D2D76F87D003F24B9 /* ViewController.swift in Sources */,
+				4E31ACF92D8A0BC1000DF4B8 /* EncryptPasswordView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

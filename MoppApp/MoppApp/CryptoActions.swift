@@ -21,7 +21,8 @@
  *
  */
 
-import Foundation
+import MoppUI
+import SwiftUI
 
 protocol CryptoActions {
     func startEncryptingProcess()
@@ -29,7 +30,21 @@ protocol CryptoActions {
 }
 
 extension CryptoActions where Self: CryptoContainerViewController {
-    
+    @MainActor
+    private func encrypted() {
+        self.isCreated = false
+        self.isForPreview = false
+        self.isDecrypted = false
+        self.state = .loading
+        self.containerViewDelegate.openContainer(afterSignatureCreated: true)
+        UIAccessibility.post(notification: .screenChanged, argument: L(.cryptoEncryptionSuccess))
+        let encryptionSuccess = NotificationMessage(isSuccess: true, text: L(.cryptoEncryptionSuccess))
+        if !self.notifications.contains(where: { $0 == encryptionSuccess }) {
+            self.notifications.append(encryptionSuccess)
+        }
+        MoppFileManager.removeFiles()
+    }
+
     func startEncryptingProcess() {
         guard container.addressees.count > 0 else {
             return self.infoAlert(message: L(.cryptoNoAddresseesWarning))
@@ -38,74 +53,88 @@ extension CryptoActions where Self: CryptoContainerViewController {
         Task { [weak self] in
             do {
                 try await Encrypt.encryptFile(container.filePath, with: container.dataFiles, with: container.addressees)
-                guard let self else { return }
-                await MainActor.run {
-                    self.isCreated = false
-                    self.isForPreview = false
-                    self.isContainerEncrypted = true
-                    self.state = .loading
-                    self.containerViewDelegate.openContainer(afterSignatureCreated: true)
-                    UIAccessibility.post(notification: UIAccessibility.Notification.screenChanged, argument: L(.cryptoEncryptionSuccess))
-                    let encryptionSuccess = NotificationMessage(isSuccess: true, text: L(.cryptoEncryptionSuccess))
-                    if !self.notifications.contains(where: { $0 == encryptionSuccess }) {
-                        self.notifications.append(encryptionSuccess)
-                    }
-                    self.reloadCryptoData()
-
-                    MoppFileManager.removeFiles()
-                }
+                await self?.encrypted()
             } catch {
                 await self?.infoAlert(message: L(.cryptoEncryptionErrorText))
             }
         }
     }
+    func startEncryptingLongTermProcess() {
+        let swiftUIView = EncryptPasswordView() { keyLabel, password in
+            guard let container = self.container else { return }
+            Task { [weak self] in
+                do {
+                    try await Encrypt.encryptFile(container.filePath, with: container.dataFiles, withLabel: keyLabel, withPassword: password)
+                    await self?.encrypted()
+                } catch {
+                    await self?.infoAlert(message: L(.cryptoEncryptionErrorText))
+                }
+            }
+        }
+        let hostingController = UIHostingController(rootView: swiftUIView)
+        hostingController.modalPresentationStyle = .automatic
+        LandingViewController.shared.present(hostingController, animated: true, completion: nil)
+    }
+
     func startDecryptingProcess() {
-        let decryptSelectionVC = UIStoryboard.tokenFlow.instantiateViewController(of: TokenFlowSelectionViewController.self)
-        decryptSelectionVC.modalPresentationStyle = .overFullScreen
-        
-        decryptSelectionVC.idCardDecryptViewControllerDelegate = self
-        decryptSelectionVC.containerPath = containerPath
-        decryptSelectionVC.isFlowForDecrypting = true
-        LandingViewController.shared.present(decryptSelectionVC, animated: false, completion: nil)
+        if container.addressees.contains(where: { $0.data.isEmpty }) { // TODO: needs better discovery method
+            let swiftUIView = DecryptPasswordView(label: self.container.addressees.first?.identifier ?? "") { password in
+                do {
+                    let decryptedData = try Decrypt.decryptFile(self.containerPath, withPassword: password)
+                    self.idCardDecryptDidFinished(success: true,  dataFiles: decryptedData, error: nil)
+                } catch {
+                    self.idCardDecryptDidFinished(success: false, dataFiles: [:], error: error)
+                }
+            }
+            let hostingController = UIHostingController(rootView: swiftUIView)
+            hostingController.modalPresentationStyle = .automatic
+            LandingViewController.shared.present(hostingController, animated: true, completion: nil)
+        } else {
+            let decryptSelectionVC = UIStoryboard.tokenFlow.instantiateViewController(of: TokenFlowSelectionViewController.self)
+            decryptSelectionVC.modalPresentationStyle = .overFullScreen
+            decryptSelectionVC.idCardDecryptViewControllerDelegate = self
+            decryptSelectionVC.addressees = container.addressees
+            decryptSelectionVC.containerPath = containerPath
+            decryptSelectionVC.isFlowForDecrypting = true
+            LandingViewController.shared.present(decryptSelectionVC, animated: false, completion: nil)
+        }
     }
 }
 
 extension CryptoContainerViewController : IdCardDecryptViewControllerDelegate {
 
-    func idCardDecryptDidFinished(success: Bool, dataFiles: [String:Data], error: Error?) {
-        if success {
-            container.dataFiles.removeAll()
-            for dataFile in dataFiles {
-                guard let destinationPath = MoppFileManager.shared.tempFilePath(withFileName: dataFile.key) else {
-                    dismiss(animated: false)
-                    infoAlert(message: L(.decryptionErrorMessage))
-                    return
-                }
-                container.dataFiles.append(CryptoDataFile(filename: dataFile.key, filePath: destinationPath))
-                MoppFileManager.shared.createFile(atPath: destinationPath, contents: dataFile.value)
-            }
-
-            self.isCreated = false
-            self.isForPreview = false
-            self.dismiss(animated: false)
-            self.isDecrypted = true
-            self.isContainerEncrypted = false
-
-            let decryptionSuccess = NotificationMessage(isSuccess: true, text: L(.containerDetailsDecryptionSuccess))
-            if !self.notifications.contains(where: { $0 == decryptionSuccess }) {
-                self.notifications.append(decryptionSuccess)
-            }
-            UIAccessibility.post(notification: .screenChanged, argument: L(.containerDetailsDecryptionSuccess))
-
-            self.reloadCryptoData()
-        } else {
-            self.dismiss(animated: false)
+    func idCardDecryptDidFinished(success: Bool, dataFiles: [String: Data], error: Error?) {
+        dismiss(animated: false)
+        guard success else {
             if let nsError = error as NSError?,
                nsError == .pinBlocked {
                 errorAlertWithLink(message: L(.pin1BlockedAlert))
             } else {
                 infoAlert(message: L(.decryptionErrorMessage))
             }
+            return
         }
+
+        container.dataFiles.removeAll()
+        for dataFile in dataFiles {
+            guard let destinationPath = MoppFileManager.shared.tempFilePath(withFileName: dataFile.key) else {
+                infoAlert(message: L(.decryptionErrorMessage))
+                return
+            }
+            container.dataFiles.append(CryptoDataFile(filename: dataFile.key, filePath: destinationPath))
+            MoppFileManager.shared.createFile(atPath: destinationPath, contents: dataFile.value)
+        }
+
+        self.isCreated = false
+        self.isForPreview = false
+        self.isDecrypted = true
+
+        let decryptionSuccess = NotificationMessage(isSuccess: true, text: L(.containerDetailsDecryptionSuccess))
+        if !self.notifications.contains(where: { $0 == decryptionSuccess }) {
+            self.notifications.append(decryptionSuccess)
+        }
+        UIAccessibility.post(notification: .screenChanged, argument: L(.containerDetailsDecryptionSuccess))
+
+        self.reloadCryptoData()
     }
 }

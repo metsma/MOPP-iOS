@@ -77,7 +77,6 @@ extension PreviewActions where Self: ContainerViewController {
             let containerViewController = CryptoContainerViewController.instantiate()
 
             containerViewController.sections = ContainerViewController.sectionsEncrypted
-            containerViewController.isContainerEncrypted = true
             containerViewController.isAsicContainer = false
             containerViewController.isForPreview = true
             containerViewController.containerPath = destinationPath

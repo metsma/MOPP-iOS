@@ -33,7 +33,9 @@
 "tab-share-button" = "SHARE";
 "tab-share-button-accessibility" = "SHARE CONTAINER";
 "tab-encrypt-button" = "ENCRYPT";
+"tab-encrypt-longterm-button" = "ENCRYPT LONG TERM";
 "tab-encrypt-button-accessibility" = "ENCRYPT DOCUMENT";
+"tab-encrypt-longterm-button-accessibility" = "ENCRYPT LONG TERM DOCUMENT";
 "tab-decrypt-button" = "DECRYPT";
 "tab-confirm-button" = "CONFIRM";
 
@@ -573,6 +575,7 @@
 "voice-control-pin1-field" = "PIN1 code";
 "voice-control-pin2-field" = "PIN2 code";
 "voice-control-tab-encrypt" = "Encrypt";
+"voice-control-tab-encrypt-longterm" = "Encrypt Long Term";
 "voice-control-tab-decrypt" = "Decrypt";
 "voice-control-tab-confirm" = "Confirm";
 "voice-control-search-recipients" = "Search recipients";

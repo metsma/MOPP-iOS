@@ -46,7 +46,9 @@ enum LocKey : String
     case tabShareButton = "tab-share-button"
     case tabShareButtonAccessibility = "tab-share-button-accessibility"
     case tabEncryptButton = "tab-encrypt-button"
+    case tabEncryptLongTermButton = "tab-encrypt-longterm-button"
     case tabEncryptButtonAccessibility = "tab-encrypt-button-accessibility"
+    case tabEncryptLongTermButtonAccessibility = "tab-encrypt-longterm-button-accessibility"
     case tabDecryptButton = "tab-decrypt-button"
     case tabConfirmButton = "tab-confirm-button"
     case tabSelected = "tab-selected"
@@ -527,6 +529,7 @@ enum LocKey : String
     case voiceControlPin1Field = "voice-control-pin1-field";
     case voiceControlPin2Field = "voice-control-pin2-field";
     case voiceControlTabEncrypt = "voice-control-tab-encrypt";
+    case voiceControlTabEncryptLongTerm = "voice-control-tab-encrypt-longterm";
     case voiceControlTabDecrypt = "voice-control-tab-decrypt";
     case voiceControlTabConfirm = "voice-control-tab-confirm";
     case voiceControlSearchRecipients = "voice-control-search-recipients";
