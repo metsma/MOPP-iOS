@@ -81,9 +81,6 @@ fileprivate let kSivaAccessState = "kSivaAccessState"
 fileprivate let kSivaUrl = "kSivaUrl"
 fileprivate let kSivaFileCertName = "kSivaFileCertName"
 fileprivate let kProxySetting = "kProxySetting"
-fileprivate let kProxyHost = "kProxyHost"
-fileprivate let kProxyPort = "kProxyPort"
-fileprivate let kProxyUsername = "kProxyUsername"
 fileprivate let kNfcShowCanMessage = "kNfcShowCanMessage"
 
 class DefaultsHelper
@@ -354,36 +351,7 @@ class DefaultsHelper
             return ProxySetting(rawValue: UserDefaults.standard.value(forKey: kProxySetting) as? String ?? "") ?? .noProxy
         }
     }
-    
-    class var proxyHost: String? {
-        set {
-            UserDefaults.standard.set(newValue, forKey: kProxyHost)
-        }
-        get {
-            return UserDefaults.standard.value(forKey: kProxyHost) as? String
-        }
-    }
-    
-    class var proxyPort: Int {
-        set {
-            // Set default port 80
-            UserDefaults.standard.set(newValue == 0 ? 80 : newValue, forKey: kProxyPort)
-        }
-        get {
-            let port = UserDefaults.standard.integer(forKey: kProxyPort)
-            return port == 0 ? 80 : port
-        }
-    }
-    
-    class var proxyUsername: String? {
-        set {
-            UserDefaults.standard.set(newValue, forKey: kProxyUsername)
-        }
-        get {
-            return UserDefaults.standard.value(forKey: kProxyUsername) as? String
-        }
-    }
-    
+
     class var nfcShowCanMessage: Bool {
         set {
             UserDefaults.standard.set(newValue, forKey: kNfcShowCanMessage)

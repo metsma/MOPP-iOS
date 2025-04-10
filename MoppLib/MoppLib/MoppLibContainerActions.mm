@@ -23,6 +23,7 @@
 
 #import "MoppLibDigidocManager.h"
 #import <MoppLib/MoppLib-Swift.h>
+#import <CryptoLib/CryptoLib-Swift.h>
 
 #include <digidocpp/Conf.h>
 #include <digidocpp/Container.h>
@@ -39,6 +40,15 @@ struct MoppLibDigidocContainerOpenCB: public digidoc::ContainerOpenCB {
         return MoppLibManager.shared.validateOnline;
     }
 };
+
+@implementation NSString (std_string)
+- (std::string)toString {
+    if (self == nil) {
+        return {};
+    }
+    return {self.UTF8String};
+}
+@end
 
 struct DigiDocConf final: public digidoc::ConfCurrent {
     std::string TSLCache() const final {
@@ -104,39 +114,29 @@ struct DigiDocConf final: public digidoc::ConfCurrent {
     }
 
     std::string proxyHost() const final {
-        if (NSString *host = [NSUserDefaults.standardUserDefaults stringForKey:@"kProxyHost"]) {
-            return host.UTF8String;
+        if (NSDictionary<NSString *, id> *data = [CDoc2Settings proxyCredentials]) {
+            return [(NSString*)data[CDoc2Settings.kProxyHost] toString];
         }
         return {};
     }
 
     std::string proxyPort() const final {
-        NSInteger port = [NSUserDefaults.standardUserDefaults integerForKey:@"kProxyPort"];
-        return std::to_string(port);
+        if (NSDictionary<NSString *, id> *data = [CDoc2Settings proxyCredentials]) {
+            return [(NSString*)data[CDoc2Settings.kProxyPassword] toString];
+        }
+        return {};
     }
 
     std::string proxyUser() const final {
-        if (NSString *user = [NSUserDefaults.standardUserDefaults stringForKey:@"kProxyUsername"]) {
-            return user.UTF8String;
+        if (NSDictionary<NSString *, id> *data = [CDoc2Settings proxyCredentials]) {
+            return [(NSString*)data[CDoc2Settings.kProxyUsername] toString];
         }
         return {};
     }
 
     std::string proxyPass() const final {
-        NSDictionary *query = @{
-            (__bridge id)kSecClass: (__bridge id)kSecClassGenericPassword,
-            (__bridge id)kSecAttrService: NSBundle.mainBundle.bundleIdentifier,
-            (__bridge id)kSecAttrAccount: [NSString stringWithFormat:@"%@.proxyPasswordKey", NSBundle.mainBundle.bundleIdentifier],
-            (__bridge id)kSecReturnData: @YES,
-            (__bridge id)kSecMatchLimit: (__bridge id)kSecMatchLimitOne
-        };
-
-        CFTypeRef infoData = nullptr;
-        OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)query, &infoData);
-        if (status == errSecSuccess && infoData != nullptr) {
-            if (NSData *password = CFBridgingRelease(infoData)) {
-                return {(const char*)password.bytes, password.length};
-            }
+        if (NSDictionary<NSString *, id> *data = [CDoc2Settings proxyCredentials]) {
+            return [(NSString*)data[CDoc2Settings.kProxyPassword] toString];
         }
         return {};
     }

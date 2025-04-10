@@ -23,12 +23,10 @@
 #import "Decrypt.h"
 #import "Extensions.h"
 #import "SmartCardTokenWrapper.h"
-#import <CryptoLib/CryptoLib-Swift.h>
+#import "Config.h"
 
 #include <cdoc/CdocReader.h>
-#include <cdoc/Configuration.h>
 #include <cdoc/Lock.h>
-#include <cdoc/NetworkBackend.h>
 #include <cdoc/Recipient.h>
 
 @implementation Addressee (label)
@@ -59,35 +57,6 @@
 }
 
 @end
-
-struct Settings: public libcdoc::Configuration {
-    std::string getValue(std::string_view domain, std::string_view param) const final {
-        if(param == KEYSERVER_FETCH_URL)
-            return [CDoc2Settings.getFetchURL toString];
-        if(param == KEYSERVER_SEND_URL)
-            return [CDoc2Settings.getPostURL toString];
-        return {};
-    }
-};
-
-struct Token: public SmartCardTokenWrapper, public libcdoc::NetworkBackend
-{
-    std::vector<uint8_t> cert;
-
-    Token(id<AbstractSmartToken> smartToken, std::vector<uint8_t> _cert)
-        : SmartCardTokenWrapper(smartToken)
-        , cert(_cert)
-    {}
-
-    libcdoc::result_t getClientTLSCertificate(std::vector<uint8_t> &dst) final {
-        dst = cert;
-        return libcdoc::OK;
-    }
-
-    libcdoc::result_t signTLS(std::vector<uint8_t> &dst, libcdoc::CryptoBackend::HashAlgorithm algorithm, const std::vector<uint8_t> &digest) final {
-        return sign(dst, algorithm, digest, 0);
-    }
-};
 
 @implementation Decrypt
 
@@ -125,9 +94,26 @@ struct Token: public SmartCardTokenWrapper, public libcdoc::NetworkBackend
             return completion(nil, error);
         }
 
-        Token token(smartToken, cert);
-        Settings conf;
+        struct TokenBackend: public SmartCardTokenWrapper, public Network
+        {
+            std::vector<uint8_t> cert;
 
+            TokenBackend(id<AbstractSmartToken> smartToken, std::vector<uint8_t> &&_cert)
+                : SmartCardTokenWrapper(smartToken)
+                , cert(std::move(_cert))
+            {}
+
+            libcdoc::result_t getClientTLSCertificate(std::vector<uint8_t> &dst) final {
+                dst = cert;
+                return dst.empty() ? libcdoc::IO_ERROR : libcdoc::OK;
+            }
+
+            libcdoc::result_t signTLS(std::vector<uint8_t> &dst, libcdoc::CryptoBackend::HashAlgorithm algorithm, const std::vector<uint8_t> &digest) final {
+                return sign(dst, algorithm, digest, 0);
+            }
+        };
+        TokenBackend token(smartToken, std::move(cert));
+        Settings conf;
         std::unique_ptr<libcdoc::CDocReader> reader(libcdoc::CDocReader::createReader(fullPath.UTF8String, &conf, &token, &token));
 
         auto idx = reader->getLockForCert(cert);

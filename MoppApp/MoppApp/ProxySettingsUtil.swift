@@ -21,7 +21,6 @@
  *
  */
 
-import Foundation
 import SkSigningLib
 
 class ProxySettingsUtil {
@@ -30,7 +29,6 @@ class ProxySettingsUtil {
         let proxySetting = ProxyUtil.getProxySetting()
         if proxySetting == .systemProxy {
             ProxyUtil.updateSystemProxySettings()
-            KeychainUtil.remove(key: proxyPasswordKey)
         }
     }
 }

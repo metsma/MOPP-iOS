@@ -22,36 +22,10 @@
 
 #import "Encrypt.h"
 #import "Extensions.h"
-
-#import <CryptoLib/CryptoLib-Swift.h>
+#import "Config.h"
 
 #include <cdoc/CDocWriter.h>
-#include <cdoc/Configuration.h>
-#include <cdoc/NetworkBackend.h>
 #include <cdoc/Recipient.h>
-
-struct Settings: public libcdoc::Configuration {
-    std::string getValue(std::string_view domain, std::string_view param) const final {
-        if(param == KEYSERVER_FETCH_URL)
-            return [CDoc2Settings.getFetchURL toString];
-        if(param == KEYSERVER_SEND_URL)
-            return [CDoc2Settings.getPostURL toString];
-        return {};
-    }
-};
-
-struct Network: public libcdoc::NetworkBackend {
-    libcdoc::result_t getPeerTLSCertificates(std::vector<std::vector<uint8_t>> &dst, const std::string& url) final {
-        libcdoc::NetworkBackend::getPeerTLSCertificates(dst);
-        for (NSData *cert in CDoc2Settings.cdoc2Certs) {
-            dst.push_back([cert toVector]);
-        }
-        if (auto cert = [CDoc2Settings.getCert toVector]; !cert.empty()) {
-            dst.push_back(std::move(cert));
-        }
-        return libcdoc::OK;
-    }
-};
 
 @implementation Encrypt
 

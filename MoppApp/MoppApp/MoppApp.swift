@@ -101,7 +101,7 @@ class MoppApp: UIApplication, URLSessionDelegate, URLSessionDownloadDelegate {
         
         if DefaultsHelper.firstStart {
             DefaultsHelper.firstStart = false
-            KeychainUtil.remove(key: proxyPasswordKey)
+            CDoc2Settings.clearProxyCredentials()
         }
 
         window = UIWindow(frame: UIScreen.main.bounds)

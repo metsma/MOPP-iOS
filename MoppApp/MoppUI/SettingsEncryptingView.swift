@@ -27,11 +27,11 @@ import ASN1Decoder
 
 public let kUseCDoc2Encryption = "kUseCDoc2Encryption"
 public let kUseCDoc2OnlineEncryption = "kUseCDoc2OnlineEncryption"
-public let kUseCDoc2SelectedService = "kUseCDoc2SelectedService"
-public let kUseCDoc2UUID = "kUseCDoc2UUID"
-public let kUseCDoc2PostURL = "kUseCDoc2PostURL"
-public let kUseCDoc2FetchURL = "kUseCDoc2FetchURL"
-public let kUseCDoc2Cert = "kUseCDoc2Cert"
+public let kCDoc2SelectedService = "kCDoc2SelectedService"
+public let kCDoc2UUID = "kCDoc2UUID"
+public let kCDoc2PostURL = "kCDoc2PostURL"
+public let kCDoc2FetchURL = "kCDoc2FetchURL"
+public let kCDoc2Cert = "kCDoc2Cert"
 
 extension UICollectionReusableView {
     override open var backgroundColor: UIColor? {
@@ -81,11 +81,11 @@ public struct SettingsEncryptingView: View, Initializable {
     @Environment(\.dismiss) private var dismiss
     @AppStorage(kUseCDoc2Encryption) private var enableCDoc2Encryption = false
     @AppStorage(kUseCDoc2OnlineEncryption) private var enableCDoc2OnlineEncryption = false
-    @AppStorage(kUseCDoc2SelectedService) private var selected = "00000000-0000-0000-0000-0000000000000000"
-    @AppStorage(kUseCDoc2UUID) private var uuid = ""
-    @AppStorage(kUseCDoc2PostURL) private var post = ""
-    @AppStorage(kUseCDoc2FetchURL) private var fetch = ""
-    @AppStorage(kUseCDoc2Cert) private var cert: Data?
+    @AppStorage(kCDoc2SelectedService) private var selected = "00000000-0000-0000-0000-0000000000000000"
+    @AppStorage(kCDoc2UUID) private var uuid = ""
+    @AppStorage(kCDoc2PostURL) private var post = ""
+    @AppStorage(kCDoc2FetchURL) private var fetch = ""
+    @AppStorage(kCDoc2Cert) private var cert: Data?
     @ObservedObject var model = Model()
     @State var isImporting = false
 

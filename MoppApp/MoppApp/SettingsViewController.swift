@@ -130,10 +130,7 @@ class SettingsViewController: MoppViewController {
 
     func resetProxy() {
         DefaultsHelper.proxySetting = .noProxy
-        DefaultsHelper.proxyHost = ""
-        DefaultsHelper.proxyPort = 80
-        DefaultsHelper.proxyUsername = ""
-        KeychainUtil.remove(key: proxyPasswordKey)
+        CDoc2Settings.clearProxyCredentials()
     }
     
     deinit {

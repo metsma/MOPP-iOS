@@ -314,17 +314,16 @@ class ProxyViewController: MoppViewController, URLSessionDelegate {
     func saveProxySettings() {
         let savedProxySetting = DefaultsHelper.proxySetting
         if savedProxySetting == .noProxy {
-            DefaultsHelper.proxyHost = ""
-            DefaultsHelper.proxyPort = 80
-            DefaultsHelper.proxyUsername = ""
-            KeychainUtil.remove(key: proxyPasswordKey)
+            CDoc2Settings.clearProxyCredentials()
         } else if savedProxySetting == .systemProxy {
             ProxyUtil.updateSystemProxySettings()
         } else if savedProxySetting == .manualProxy {
-            DefaultsHelper.proxyHost = hostTextField.text
-            DefaultsHelper.proxyPort = Int(portTextField.text ?? "80") ?? 80
-            DefaultsHelper.proxyUsername = usernameTextField.text
-            let _ = KeychainUtil.save(key: proxyPasswordKey, info: (passwordTextField.text ?? "").data(using: .utf8) ?? Data())
+            CDoc2Settings.setProxyCredentials(
+                host: hostTextField.text ?? "",
+                port: Int(portTextField.text ?? "80") ?? 80,
+                username:  usernameTextField.text ?? "",
+                password: passwordTextField.text ?? ""
+            )
         }
     }
     
@@ -336,10 +335,11 @@ class ProxyViewController: MoppViewController, URLSessionDelegate {
             self.useManualProxyRadioButton.setSelectedState(state: savedProxySetting == .manualProxy)
             
             if savedProxySetting == .manualProxy {
-                self.hostTextField.text = DefaultsHelper.proxyHost
-                self.portTextField.text = String(DefaultsHelper.proxyPort)
-                self.usernameTextField.text = DefaultsHelper.proxyUsername
-                self.passwordTextField.text = String(data: KeychainUtil.retrieve(key: proxyPasswordKey) ?? Data(), encoding: .utf8)
+                let data = CDoc2Settings.proxyCredentials()
+                self.hostTextField.text = data?[CDoc2Settings.kProxyHost] as? String
+                self.portTextField.text =  String(data?[CDoc2Settings.kProxyPort] as? Int ?? 80)
+                self.usernameTextField.text =  data?[CDoc2Settings.kProxyUsername] as? String
+                self.passwordTextField.text =  data?[CDoc2Settings.kProxyPassword] as? String
             } else if savedProxySetting == .noProxy || savedProxySetting == .systemProxy {
                 self.hostTextField.text = ""
                 self.portTextField.text = "80"
@@ -471,18 +471,18 @@ extension ProxyViewController: UITextFieldDelegate {
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         switch textField {
-        case hostTextField:
-            DefaultsHelper.proxyHost = textField.text
-        case portTextField:
-            DefaultsHelper.proxyPort = Int(textField.text ?? "80") ?? 80
-        case usernameTextField:
-            DefaultsHelper.proxyUsername = textField.text
-        case passwordTextField:
-            let _ = KeychainUtil.save(key: proxyPasswordKey, info: (textField.text ?? "").data(using: .utf8) ?? Data())
+        case hostTextField, portTextField, usernameTextField, passwordTextField:
+            let test = passwordTextField.text
+            CDoc2Settings.setProxyCredentials(
+                host: hostTextField.text ?? "",
+                port: Int(portTextField.text ?? "") ?? 0,
+                username: usernameTextField.text ?? "",
+                password: passwordTextField.text ?? ""
+            )
         default:
             break
         }
-        UIAccessibility.post(notification: UIAccessibility.Notification.screenChanged, argument: textField)
+        UIAccessibility.post(notification: .screenChanged, argument: textField)
     }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {

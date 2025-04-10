@@ -26,11 +26,12 @@ import SkSigningLib
 public class ManualProxy {
 
     public static func getManualProxyConfiguration() -> Proxy {
+        let proxy = CDoc2Settings.proxyCredentials()
         return Proxy(
             setting: DefaultsHelper.proxySetting,
-            host: DefaultsHelper.proxyHost ?? "",
-            port: DefaultsHelper.proxyPort,
-            username: DefaultsHelper.proxyUsername ?? "",
-            password: String(data: KeychainUtil.retrieve(key: proxyPasswordKey) ?? Data(), encoding: .utf8) ?? "")
+            host: proxy?[CDoc2Settings.kProxyHost] as? String ?? "",
+            port: proxy?[CDoc2Settings.kProxyPort] as? Int ?? 80,
+            username: proxy?[CDoc2Settings.kProxyUsername] as? String ?? "",
+            password: proxy?[CDoc2Settings.kProxyPassword] as? String ?? "")
     }
 }

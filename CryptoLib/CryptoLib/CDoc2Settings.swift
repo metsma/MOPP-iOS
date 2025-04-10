@@ -25,11 +25,15 @@ import Foundation
 public class CDoc2Settings: NSObject {
     public static let kUseCDoc2Encryption = "kUseCDoc2Encryption"
     public static let kUseCDoc2OnlineEncryption = "kUseCDoc2OnlineEncryption"
-    public static let kUseCDoc2SelectedService = "kUseCDoc2SelectedService"
-    public static let kUseCDoc2UUID = "kUseCDoc2UUID"
-    public static let kUseCDoc2PostURL = "kUseCDoc2PostURL"
-    public static let kUseCDoc2FetchURL = "kUseCDoc2FetchURL"
-    public static let kUseCDoc2Cert = "kUseCDoc2Cert"
+    public static let kCDoc2SelectedService = "kCDoc2SelectedService"
+    public static let kCDoc2UUID = "kCDoc2UUID"
+    public static let kCDoc2PostURL = "kCDoc2PostURL"
+    public static let kCDoc2FetchURL = "kCDoc2FetchURL"
+    public static let kCDoc2Cert = "kCDoc2Cert"
+    @objc public static let kProxyHost = "kProxyHost"
+    @objc public static let kProxyPort = "kProxyPort"
+    @objc public static let kProxyUsername = "kProxyUsername"
+    @objc public static let kProxyPassword = "kProxyPassword"
 
     private static func set<T>(_ key: String, value: T) {
         UserDefaults.standard.set(value, forKey: key)
@@ -50,28 +54,28 @@ public class CDoc2Settings: NSObject {
     }
 
     public class var cdoc2SelectedService: String? {
-        get { get(kUseCDoc2SelectedService) }
-        set { set(kUseCDoc2SelectedService, value: newValue) }
+        get { get(kCDoc2SelectedService) }
+        set { set(kCDoc2SelectedService, value: newValue) }
     }
 
     public class var cdoc2UUID: String? {
-        get { get(kUseCDoc2UUID) }
-        set { set(kUseCDoc2UUID, value: newValue) }
+        get { get(kCDoc2UUID) }
+        set { set(kCDoc2UUID, value: newValue) }
     }
 
     public class var cdoc2PostURL: String? {
-        get { get(kUseCDoc2PostURL) }
-        set { set(kUseCDoc2PostURL, value: newValue) }
+        get { get(kCDoc2PostURL) }
+        set { set(kCDoc2PostURL, value: newValue) }
     }
 
     public class var cdoc2FetchURL: String? {
-        get { get(kUseCDoc2FetchURL) }
-        set { set(kUseCDoc2FetchURL, value: newValue) }
+        get { get(kCDoc2FetchURL) }
+        set { set(kCDoc2FetchURL, value: newValue) }
     }
 
     public class var cdoc2Cert: Data? {
-        get { get(kUseCDoc2Cert) }
-        set { set(kUseCDoc2Cert, value: newValue) }
+        get { get(kCDoc2Cert) }
+        set { set(kCDoc2Cert, value: newValue) }
     }
 
     @objc public static var cdoc2Certs = [Data]()
@@ -102,5 +106,97 @@ public class CDoc2Settings: NSObject {
 
     @objc public class func getCert() -> Data? {
         return cdoc2Cert
+    }
+
+    private static func findProxy(withData data: Bool = false) -> [String: Any]? {
+        let query: [CFString: Any] = [
+            kSecClass: kSecClassInternetPassword,
+            kSecAttrLabel: "proxy",
+            kSecReturnAttributes: true,
+            kSecReturnData: (data ? kCFBooleanTrue! : kCFBooleanFalse!),
+            kSecMatchLimit: kSecMatchLimitOne
+        ]
+        var item: CFTypeRef?
+        switch SecItemCopyMatching(query as CFDictionary, &item) {
+        case errSecSuccess:
+            return item as? [String: Any]
+        case errSecItemNotFound:
+            return nil
+        case (let status):
+            print("Keychain lookup failed \(status).")
+        }
+        return nil
+    }
+
+    @objc public class func proxyCredentials() -> [String: Any]? {
+        guard let result = findProxy(withData: true),
+              let host = result[kSecAttrServer as String] as? String,
+              let port = result[kSecAttrPort as String] as? Int,
+              let username = result[kSecAttrAccount as String] as? String,
+              let passwordData = result[kSecValueData as String] as? Data,
+              let password = String(data: passwordData, encoding: .utf8) else {
+            return nil
+        }
+        return [
+            kProxyHost: host,
+            kProxyPort: port,
+            kProxyUsername: username,
+            kProxyPassword: password
+        ]
+    }
+
+    public class func setProxyCredentials(host: String, port: Int, username: String, password: String) {
+        let passwordData = password.data(using: .utf8)!
+        if let existing = findProxy() {
+            let updateQuery: [CFString: Any] = [
+                kSecClass: kSecClassInternetPassword,
+                kSecAttrLabel: "proxy",
+                kSecAttrServer: existing[kSecAttrServer as String]!,
+                kSecAttrPort: existing[kSecAttrPort as String]!,
+                kSecAttrAccount: existing[kSecAttrAccount as String]!
+            ]
+
+            let updateAttrs: [CFString : Any] = [
+                kSecAttrLabel: "proxy",
+                kSecAttrServer: host,
+                kSecAttrPort: port,
+                kSecAttrAccount: username,
+                kSecValueData: passwordData
+            ]
+
+            let updateStatus = SecItemUpdate(updateQuery as CFDictionary, updateAttrs as CFDictionary)
+            if updateStatus != errSecSuccess {
+                print("Keychain update failed: \(updateStatus)")
+            }
+        } else {
+            let attributes: [CFString : Any] = [
+                kSecClass: kSecClassInternetPassword,
+                kSecAttrLabel: "proxy",
+                kSecAttrServer: host,
+                kSecAttrPort: port,
+                kSecAttrAccount: username,
+                kSecValueData: passwordData
+            ]
+
+            let addStatus = SecItemAdd(attributes as CFDictionary, nil)
+            if addStatus != errSecSuccess {
+                print("Keychain add failed: \(addStatus)")
+            }
+        }
+    }
+
+    public class func clearProxyCredentials() {
+        if let item = findProxy() {
+            let deleteQuery: [String: Any] = [
+                kSecClass as String: kSecClassInternetPassword,
+                kSecAttrServer as String: item[kSecAttrServer as String]!,
+                kSecAttrPort as String:  item[kSecAttrPort as String]!,
+                kSecAttrAccount as String:  item[kSecAttrAccount as String]!
+            ]
+            let deleteStatus = SecItemDelete(deleteQuery as CFDictionary)
+            if deleteStatus != errSecSuccess {
+                print("Keychain delete failed: \(deleteStatus)")
+            }
+        }
     }
 }

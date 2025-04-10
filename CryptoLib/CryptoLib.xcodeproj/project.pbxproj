@@ -16,6 +16,7 @@
 		39852A5220AB2418004CB100 /* Decrypt.mm in Sources */ = {isa = PBXBuildFile; fileRef = 39852A4820AB2418004CB100 /* Decrypt.mm */; };
 		39852A5320AB2418004CB100 /* Encrypt.mm in Sources */ = {isa = PBXBuildFile; fileRef = 39852A4920AB2418004CB100 /* Encrypt.mm */; };
 		4E0454632D3BE73D0013DF23 /* CryptoDataFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E0454622D3BE73D0013DF23 /* CryptoDataFile.swift */; };
+		4E07DDAB2D9EC9A900D014A4 /* Config.h in Headers */ = {isa = PBXBuildFile; fileRef = 4E07DDAA2D9EC9A200D014A4 /* Config.h */; };
 		4E17B8322D6486040063C5BF /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E17B8302D6485750063C5BF /* libz.tbd */; };
 		4E17B8352D64A1080063C5BF /* X509CertificateType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E17B8342D64A0FD0063C5BF /* X509CertificateType.swift */; };
 		4E276E042D81A61000D78F40 /* Extensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 4E276E032D81A60600D78F40 /* Extensions.h */; };
@@ -61,6 +62,7 @@
 		39852A4920AB2418004CB100 /* Encrypt.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Encrypt.mm; sourceTree = "<group>"; };
 		4E01B4A62AEFDD3B00941723 /* build-cdoc.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "build-cdoc.sh"; sourceTree = "<group>"; };
 		4E0454622D3BE73D0013DF23 /* CryptoDataFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoDataFile.swift; sourceTree = "<group>"; };
+		4E07DDAA2D9EC9A200D014A4 /* Config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
 		4E17B8302D6485750063C5BF /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		4E17B8342D64A0FD0063C5BF /* X509CertificateType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = X509CertificateType.swift; sourceTree = "<group>"; };
 		4E276E032D81A60600D78F40 /* Extensions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Extensions.h; sourceTree = "<group>"; };
@@ -116,6 +118,7 @@
 				DFA40D2E2ADF635F003EF945 /* 3513523f.0 */,
 				39231FAD20AB1C6C00E1E2B4 /* CryptoLib.h */,
 				4E276E032D81A60600D78F40 /* Extensions.h */,
+				4E07DDAA2D9EC9A200D014A4 /* Config.h */,
 				39852A4120AB2418004CB100 /* Decrypt.h */,
 				39852A4820AB2418004CB100 /* Decrypt.mm */,
 				39852A4220AB2418004CB100 /* Encrypt.h */,
@@ -151,6 +154,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4E07DDAB2D9EC9A900D014A4 /* Config.h in Headers */,
 				39231FAF20AB1C6C00E1E2B4 /* CryptoLib.h in Headers */,
 				39852A4B20AB2418004CB100 /* Decrypt.h in Headers */,
 				39852A4C20AB2418004CB100 /* Encrypt.h in Headers */,

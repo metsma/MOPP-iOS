@@ -22,6 +22,7 @@
  */
 
 import Foundation
+import CryptoLib
 
 public enum ProxySetting: String, Codable {
     case noProxy
@@ -115,9 +116,12 @@ public class ProxyUtil {
         if !proxySettings.host.isEmpty && proxySettings.port > 0 {
             let defaults = UserDefaults.standard
             defaults.set(proxySettings.setting.rawValue, forKey: "kProxySetting")
-            defaults.set(proxySettings.host, forKey: "kProxyHost")
-            defaults.set(proxySettings.port, forKey: "kProxyPort")
-            defaults.set("", forKey: "kProxyUsername")
+            /*CDoc2Settings.setProxyCredentials(
+                host: proxySettings.host,
+                port: proxySettings.port,
+                username: "",
+                password: ""
+            )*/
         }
     }
 }
