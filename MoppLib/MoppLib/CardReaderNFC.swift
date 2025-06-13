@@ -270,8 +270,12 @@ extension MutableDataProtocol {
     static func ^ <D: Collection>(lhs: Self, rhs: D) -> Self where D.Element == Self.Element {
         precondition(lhs.count == rhs.count, "XOR operands must have equal length")
         var result = lhs
-        for i in 0..<result.count {
-            result[result.index(result.startIndex, offsetBy: i)] ^= rhs[rhs.index(rhs.startIndex, offsetBy: i)]
+        var i = result.startIndex
+        var j = rhs.startIndex
+        while i < result.endIndex {
+            result[i] ^= rhs[j]
+            result.formIndex(after: &i)
+            rhs.formIndex(after: &j)
         }
         return result
     }
@@ -378,7 +382,7 @@ extension NFCISO7816Tag {
 }
 
 extension TKBERTLVRecord {
-    convenience init<T : DataProtocol>(tag: TKTLVTag, bytes: T) {
+    convenience init<T: DataProtocol>(tag: TKTLVTag, bytes: T) {
         self.init(tag: tag, value: Data(bytes))
     }
 
@@ -403,34 +407,45 @@ class AES {
         }
 
         func encrypt<T : DataType>(_ data: T) throws -> Bytes {
-            return try crypt(data: data, operation: kCCEncrypt)
+            try crypt(data: data, operation: kCCEncrypt)
+        }
+
+        func encrypt<T : DataType>(_ data: T, out: inout Bytes) throws {
+            try out.withUnsafeMutableBufferPointer { outBytes in
+                var size: Int = 0
+                try crypt(data: data, result: outBytes, initializedCount: &size, operation: kCCEncrypt)
+            }
         }
 
         func decrypt<T : DataType>(_ data: T) throws -> Bytes {
-            return try crypt(data: data, operation: kCCDecrypt)
+            try crypt(data: data, operation: kCCDecrypt)
         }
 
         private func crypt<T : DataType>(data: T, operation: Int) throws -> Bytes {
             try Bytes(unsafeUninitializedCapacity: data.count + BlockSize) { buffer, initializedCount in
-                let status = data.withUnsafeBytes { dataBytes in
-                    iv.withUnsafeBytes { ivBytes in
-                        key.withUnsafeBytes { keyBytes in
-                            CCCrypt(
-                                CCOperation(operation),
-                                CCAlgorithm(kCCAlgorithmAES),
-                                CCOptions(0),
-                                keyBytes.baseAddress, key.count,
-                                ivBytes.baseAddress,
-                                dataBytes.baseAddress, data.count,
-                                buffer.baseAddress, buffer.count,
-                                &initializedCount
-                            )
-                        }
+                try crypt(data: data, result: buffer, initializedCount: &initializedCount, operation: operation)
+            }
+        }
+
+        private func crypt<T : DataType>(data: T, result: UnsafeMutableBufferPointer<UInt8>, initializedCount: inout Int, operation: Int) throws {
+            let status = data.withUnsafeBytes { dataBytes in
+                iv.withUnsafeBytes { ivBytes in
+                    key.withUnsafeBytes { keyBytes in
+                        CCCrypt(
+                            CCOperation(operation),
+                            CCAlgorithm(kCCAlgorithmAES),
+                            CCOptions(0),
+                            keyBytes.baseAddress, key.count,
+                            ivBytes.baseAddress,
+                            dataBytes.baseAddress, data.count,
+                            result.baseAddress, result.count,
+                            &initializedCount
+                        )
                     }
                 }
-                guard status == kCCSuccess else {
-                    throw MoppLibError.error(message: "AES.CBC.Error")
-                }
+            }
+            guard status == kCCSuccess else {
+                throw MoppLibError.error(message: "AES.CBC.Error")
             }
         }
     }
@@ -448,7 +463,7 @@ class AES {
             K2 = (K1[0] & 0x80) == 0 ? K1.leftShiftOneBit() : K1.leftShiftOneBit() ^ CMAC.Rb
         }
 
-        func authenticate<T: DataType>(bytes: T, count: Int = 8) throws -> Bytes.SubSequence where T.Index == Int {
+        func authenticate<T : DataType>(bytes: T, count: Int = 8) throws -> Bytes.SubSequence where T.Index == Int {
             var blocks = bytes.chunked(into: BlockSize)
             let M_last: Bytes
             if let last = blocks.popLast() {
@@ -464,11 +479,11 @@ class AES {
             var x = Bytes(repeating: 0x00, count: BlockSize)
             for M_i in blocks {
                 let y = x ^ M_i
-                x = try cipher.encrypt(y)
+                try cipher.encrypt(y, out: &x)
             }
             let y = x ^ M_last
-            let T = try cipher.encrypt(y)
-            return T[0..<count]
+            try cipher.encrypt(y, out: &x) // T
+            return x[0..<count]
         }
     }
 }
