@@ -160,6 +160,7 @@ extension CardCommandsInternal {
             }
         }
         var data = Data()
+        data.reserveCapacity(size)
         while data.count < size {
             data.append(contentsOf: try await reader.sendAPDU(
                 ins: 0xB0, p1: UInt8(data.count >> 8), p2: UInt8(truncatingIfNeeded: data.count), le: UInt8(min(0xE5, size - data.count))))
